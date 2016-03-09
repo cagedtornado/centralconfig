@@ -19,15 +19,26 @@ func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	checkErr(err)
 	defer db.Close()
 
-	//	Read the 'configitems' bucket
+	//	For now, just return a blank config item.
+	ci := ConfigItem{
+		Id:    77,
+		Name:  "bogus",
+		Value: "fubar"}
+
+	//	Need to decide on appropriate nesting structure for BoltDB...
+	//	Perhaps {appname} or {} -> Configitems?
+	//	                      ^ this means 'global'
 	db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("configitems"))
+		// b := tx.Bucket([]byte("configitems"))
 
 		//	Get the item with the expected key:
-		v := b.Get([]byte(configItem.Id))
-		fmt.Printf("%s", v)
+		// v := b.Get([]byte(configItem.Name))
+		// fmt.Printf("%s", v)
+
 		return nil
 	})
+
+	return ci, nil
 }
 
 func checkErr(err error) {
