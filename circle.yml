@@ -1,3 +1,8 @@
+dependencies:
+  override:
+    - env GOOS=windows go get -d -v ./...
+    - go get -t -d -v ./...
+
 deployment:
   release:
     branch: master
