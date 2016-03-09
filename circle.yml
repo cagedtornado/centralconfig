@@ -1,7 +1,3 @@
-dependencies:
-  override:
-    - go get -v ./...
-
 deployment:
   release:
     branch: master
