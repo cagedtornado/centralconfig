@@ -13,13 +13,10 @@ var cfgFile string
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "centralconfig",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A simple REST service and UI for application configuration",
+	Long: `Centralconfig is a REST based service for managing application configuration.
+It's designed to be used with one of many different SQL (or nosql) backends.  You can
+use both an API and a web UI to manage configuration information.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },

@@ -24,19 +24,17 @@ type Tweet struct {
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Start the config server",
+	Long: `Centralconfig provides its own webserver which can serve both the 
+	API and the UI for the app.`,
 	Run: serve,
 }
 
 func serve(cmd *cobra.Command, args []string) {
 
 	r := mux.NewRouter()
+
+	//	Handle config get
 	r.HandleFunc("/news/{twitterName}", func(w http.ResponseWriter, r *http.Request) {
 
 		//	Parse the twitter name from the url
