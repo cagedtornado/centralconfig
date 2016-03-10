@@ -11,13 +11,13 @@ var (
 	yamlConfig bool
 )
 
-var yamlDefault = []byte(`Hacker: true
-sqlite:
+var yamlDefault = []byte(`
+boltdb:
   database: config.db
 `)
 
 var jsonDefault = []byte(`{
-"sqlite": {
+"boltdb": {
         "database": "config.db"
     }
 }`)
@@ -34,6 +34,8 @@ var createCmd = &cobra.Command{
 		if jsonConfig {
 			fmt.Println("Creating JSON config")
 		} else if yamlConfig {
+			//	Write the yamlDefault to the location of the default
+			fmt.Println("Writing config to ?")
 			fmt.Println("Creating YAML config")
 		}
 	},

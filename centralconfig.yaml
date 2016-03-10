@@ -1,0 +1,2 @@
+boltdb:
+  database: config.db

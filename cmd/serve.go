@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/spf13/viper"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -33,6 +36,9 @@ var serveCmd = &cobra.Command{
 func serve(cmd *cobra.Command, args []string) {
 
 	r := mux.NewRouter()
+
+	//	Get configuration information
+	fmt.Println(viper.GetString("boltdb.database"))
 
 	//	Handle config get
 	r.HandleFunc("/news/{twitterName}", func(w http.ResponseWriter, r *http.Request) {
