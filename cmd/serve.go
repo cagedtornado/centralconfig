@@ -35,10 +35,16 @@ var serveCmd = &cobra.Command{
 
 func serve(cmd *cobra.Command, args []string) {
 
-	r := mux.NewRouter()
+	//	If we have a config file, report it:
+	if viper.ConfigFileUsed() != "" {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
 
 	//	Get configuration information
 	fmt.Println(viper.GetString("boltdb.database"))
+
+	//	Create a router and setup our REST endpoints...
+	r := mux.NewRouter()
 
 	//	Handle config get
 	r.HandleFunc("/news/{twitterName}", func(w http.ResponseWriter, r *http.Request) {

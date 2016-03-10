@@ -26,17 +26,14 @@ var jsonDefault = []byte(`{
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Creates a default configuration file",
-	Long:  `Use this command to create a default configuration file`,
+	Long: `Use this command to print a default configuration file.  
+	You can redirect the output to a file in order to create a default config file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("create called")
 
 		if jsonConfig {
-			fmt.Println("Creating JSON config")
+			fmt.Printf("%s", jsonDefault)
 		} else if yamlConfig {
-			//	Write the yamlDefault to the location of the default
-			fmt.Println("Writing config to ?")
-			fmt.Println("Creating YAML config")
+			fmt.Printf("%s", yamlDefault)
 		}
 	},
 }

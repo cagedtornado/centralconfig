@@ -1,6 +1,7 @@
 package datastores
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/boltdb/bolt"
@@ -13,32 +14,69 @@ type BoltDB struct {
 	Password string
 }
 
+func (store BoltDB) InitStore(overwrite bool) error {
+	//	Open the database:
+	db, err := bolt.Open(store.Database, 0600, nil)
+	checkErr(err)
+	defer db.Close()
+
+	return err
+}
+
 func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
 	checkErr(err)
 	defer db.Close()
 
-	//	For now, just return a blank config item.
-	ci := ConfigItem{
-		Id:    77,
-		Name:  "bogus",
-		Value: "fubar"}
+	//	Our return item:
+	retval := ConfigItem{}
 
 	//	Need to decide on appropriate nesting structure for BoltDB...
 	//	Perhaps {appname} or {} -> Configitems?
 	//	                      ^ this means 'global'
-	db.View(func(tx *bolt.Tx) error {
-		// b := tx.Bucket([]byte("configitems"))
+	err = db.View(func(tx *bolt.Tx) error {
+		//	Get the item from the bucket with the app name
+		b := tx.Bucket([]byte(configItem.Application))
 
-		//	Get the item with the expected key:
-		// v := b.Get([]byte(configItem.Name))
-		// fmt.Printf("%s", v)
+		//	Get the item based on the config name:
+		configBytes := b.Get([]byte(configItem.Name))
+
+		//	Unmarshal data into our config item
+		if err := json.Unmarshal(configBytes, &retval); err != nil {
+			return err
+		}
 
 		return nil
 	})
 
-	return ci, nil
+	checkErr(err)
+
+	return retval, err
+}
+
+func (store BoltDB) Set(configItem ConfigItem) error {
+
+	//	Open the database:
+	db, err := bolt.Open(store.Database, 0600, nil)
+	checkErr(err)
+	defer db.Close()
+
+	//	Update the database:
+	err = db.Update(func(tx *bolt.Tx) error {
+		//	Put the item in the bucket with the app name
+		b, err := tx.CreateBucketIfNotExists([]byte(configItem.Application))
+		checkErr(err)
+
+		//	Serialize to JSON format
+		encoded, err := json.Marshal(configItem)
+		checkErr(err)
+
+		//	Store it, with the 'name' as the key:
+		return b.Put([]byte(configItem.Name), encoded)
+	})
+
+	return err
 }
 
 func checkErr(err error) {

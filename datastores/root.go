@@ -17,7 +17,16 @@ type ConfigItem struct {
 //	https://github.com/tonyhb/tonyhb.com/blob/master/posts/Building%20a%20testable%20Golang%20database%20layer.md
 //	for more information
 type ConfigService interface {
+
+	//	Initialize the store (create the DDL if necessary)
+	InitStore(overwrite bool) error
+
+	//	Create / update a config item
 	Set(c *ConfigItem) error
-	Get(c *ConfigItem) error
-	GetAll(application string) error
+
+	//	Get a specific config item
+	Get(c *ConfigItem) (ConfigItem, error)
+
+	//	Get all config items for the given application
+	GetAll(application string) ([]ConfigItem, error)
 }
