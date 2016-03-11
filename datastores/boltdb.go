@@ -32,9 +32,8 @@ func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	//	Our return item:
 	retval := ConfigItem{}
 
-	//	Need to decide on appropriate nesting structure for BoltDB...
-	//	Perhaps {appname} or {} -> Configitems?
-	//	                      ^ this means 'global'
+	//	TODO: Get global first, then get application, then get application + machine
+	//	Get the key based on the application
 	err = db.View(func(tx *bolt.Tx) error {
 		//	Get the item from the bucket with the app name
 		b := tx.Bucket([]byte(configItem.Application))
@@ -45,6 +44,44 @@ func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
 		//	Unmarshal data into our config item
 		if err := json.Unmarshal(configBytes, &retval); err != nil {
 			return err
+		}
+
+		return nil
+	})
+
+	checkErr(err)
+
+	return retval, err
+}
+
+func (store BoltDB) GetAll(application string) ([]ConfigItem, error) {
+	//	Open the database:
+	db, err := bolt.Open(store.Database, 0600, nil)
+	checkErr(err)
+	defer db.Close()
+
+	//	Our return items:
+	retval := []ConfigItem{}
+
+	//	TODO: Get global first, then get application, then get application + machine
+	//	Get the key based on the application
+	err = db.View(func(tx *bolt.Tx) error {
+
+		//	Get the items from the bucket with the app name
+		b := tx.Bucket([]byte(application))
+
+		c := b.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+
+			//	Unmarshal data into our config item
+			ci := ConfigItem{}
+			if err := json.Unmarshal(v, &ci); err != nil {
+				return err
+			}
+
+			//	Add the item to our list of config items
+			retval = append(retval, ci)
 		}
 
 		return nil
