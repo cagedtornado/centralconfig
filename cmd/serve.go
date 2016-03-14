@@ -2,9 +2,8 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/spf13/viper"
 
@@ -37,11 +36,11 @@ func serve(cmd *cobra.Command, args []string) {
 
 	//	If we have a config file, report it:
 	if viper.ConfigFileUsed() != "" {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Println("[INFO] Using config file:", viper.ConfigFileUsed())
 	}
 
 	//	Get configuration information
-	fmt.Println(viper.GetString("boltdb.database"))
+	log.Printf("[INFO] Using BoltDB database: %s", viper.GetString("boltdb.database"))
 
 	//	Create a router and setup our REST endpoints...
 	r := mux.NewRouter()
@@ -65,14 +64,18 @@ func serve(cmd *cobra.Command, args []string) {
 		json.NewEncoder(w).Encode(tweets)
 	})
 
-	portString := strconv.Itoa(serverPort)
-	http.ListenAndServe(serverInterface+":"+portString, r)
+	log.Printf("[INFO] HTTP server info: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
+	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), r)
 }
 
 func init() {
 	RootCmd.AddCommand(serveCmd)
 
+	//	Setup our flags
 	serveCmd.Flags().IntVarP(&serverPort, "port", "p", 1313, "port on which the server will listen")
 	serveCmd.Flags().StringVarP(&serverInterface, "bind", "", "127.0.0.1", "interface to which the server will bind")
 
+	//	Bind config flags for optional config file override:
+	viper.BindPFlag("http.port", serveCmd.Flags().Lookup("port"))
+	viper.BindPFlag("http.bind", serveCmd.Flags().Lookup("bind"))
 }
