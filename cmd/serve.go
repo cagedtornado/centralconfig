@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/spf13/viper"
+	"github.com/danesparza/centralconfig/api"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -43,29 +43,14 @@ func serve(cmd *cobra.Command, args []string) {
 	log.Printf("[INFO] Using BoltDB database: %s", viper.GetString("boltdb.database"))
 
 	//	Create a router and setup our REST endpoints...
-	r := mux.NewRouter()
+	var Router = mux.NewRouter()
 
-	//	Handle config get
-	r.HandleFunc("/news/{twitterName}", func(w http.ResponseWriter, r *http.Request) {
-
-		//	Parse the twitter name from the url
-		twitterName := mux.Vars(r)["twitterName"]
-
-		//	Our return values:
-		tweets := []Tweet{}
-
-		tweets = append(tweets, Tweet{
-			Id:       42,
-			Text:     "Some bogus text for " + twitterName,
-			MediaUrl: "http://yourmomsaurl.com"})
-
-		//	Set the content type header and return the JSON
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(w).Encode(tweets)
-	})
+	//	Setup our routes
+	Router.HandleFunc("/news/{twitterName}", api.TestRoute)
+	Router.HandleFunc("/", api.GetConfig)
 
 	log.Printf("[INFO] HTTP server info: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
-	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), r)
+	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), Router)
 }
 
 func init() {
