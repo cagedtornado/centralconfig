@@ -46,10 +46,13 @@ func serve(cmd *cobra.Command, args []string) {
 	var Router = mux.NewRouter()
 
 	//	Setup our routes
-	Router.HandleFunc("/news/{twitterName}", api.TestRoute)
-	Router.HandleFunc("/", api.GetConfig)
+	Router.HandleFunc("/", api.ShowHelp)
+	Router.HandleFunc("/config/get", api.GetConfig)
+	Router.HandleFunc("/config/set", api.SetConfig)
+	Router.HandleFunc("/config/getall", api.GetAllConfig)
+	Router.HandleFunc("/config/init", api.InitStore)
 
-	log.Printf("[INFO] HTTP server info: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
+	log.Printf("[INFO] Starting HTTP server: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
 	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), Router)
 }
 

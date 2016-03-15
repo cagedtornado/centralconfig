@@ -1,6 +1,10 @@
 package datastores
 
-import "time"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 //	ConfigItem represents a configuration item
 type ConfigItem struct {
@@ -29,4 +33,16 @@ type ConfigService interface {
 
 	//	Get all config items for the given application
 	GetAll(application string) ([]ConfigItem, error)
+}
+
+//	Get the currently configured datastore
+func GetConfigDatastore() ConfigService {
+
+	//	Get configuration information and return the appropriate
+	//	provider based on what is configured
+
+	//	For now, just always return the BoltDB provider
+	return BoltDB{
+		Database: viper.GetString("boltdb.database")}
+
 }

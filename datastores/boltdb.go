@@ -23,7 +23,7 @@ func (store BoltDB) InitStore(overwrite bool) error {
 	return err
 }
 
-func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
+func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
 	checkErr(err)
@@ -38,12 +38,17 @@ func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
 		//	Get the item from the bucket with the app name
 		b := tx.Bucket([]byte(configItem.Application))
 
-		//	Get the item based on the config name:
-		configBytes := b.Get([]byte(configItem.Name))
+		if b != nil {
+			//	Get the item based on the config name:
+			configBytes := b.Get([]byte(configItem.Name))
 
-		//	Unmarshal data into our config item
-		if err := json.Unmarshal(configBytes, &retval); err != nil {
-			return err
+			//	Need to make sure we got something back here before we try to unmarshal?
+			if len(configBytes) > 0 {
+				//	Unmarshal data into our config item
+				if err := json.Unmarshal(configBytes, &retval); err != nil {
+					return err
+				}
+			}
 		}
 
 		return nil
@@ -92,7 +97,7 @@ func (store BoltDB) GetAll(application string) ([]ConfigItem, error) {
 	return retval, err
 }
 
-func (store BoltDB) Set(configItem ConfigItem) error {
+func (store BoltDB) Set(configItem *ConfigItem) error {
 
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
