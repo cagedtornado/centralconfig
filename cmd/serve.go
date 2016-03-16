@@ -16,13 +16,6 @@ var (
 	serverPort      int
 )
 
-type Tweet struct {
-	Id         int64  `json:"id"`
-	CreateTime int64  `json:"createtime"`
-	Text       string `json:text`
-	MediaUrl   string `json:url`
-}
-
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "serve",
