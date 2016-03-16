@@ -16,6 +16,12 @@ type ConfigItem struct {
 	LastUpdated time.Time `sql:"updated" json:"updated"`
 }
 
+type ConfigResponse struct {
+	Status  int64        `json: "status"`
+	Message string       `json: "message"`
+	Data    []ConfigItem `json: "data"`
+}
+
 //	ConfigService encapsulates account (user) based operations
 //	This allows us to create a testable service layer.  See
 //	https://github.com/tonyhb/tonyhb.com/blob/master/posts/Building%20a%20testable%20Golang%20database%20layer.md
