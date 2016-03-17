@@ -42,6 +42,7 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/", api.ShowHelp)
 	Router.HandleFunc("/config/get", api.GetConfig)
 	Router.HandleFunc("/config/set", api.SetConfig)
+	Router.HandleFunc("/config/remove", api.RemoveConfig)
 	Router.HandleFunc("/config/getall", api.GetAllConfig)
 	Router.HandleFunc("/config/init", api.InitStore)
 

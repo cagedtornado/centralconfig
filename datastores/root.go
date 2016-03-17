@@ -19,7 +19,6 @@ type ConfigItem struct {
 type ConfigResponse struct {
 	Status  int          `json:"status"`
 	Message string       `json:"message"`
-	Error   error        `json:error`
 	Data    []ConfigItem `json:"data"`
 }
 
@@ -40,6 +39,9 @@ type ConfigService interface {
 
 	//	Get all config items for the given application
 	GetAll(application string) ([]ConfigItem, error)
+
+	//	Remove a config item
+	Remove(c *ConfigItem) error
 }
 
 //	Get the currently configured datastore
