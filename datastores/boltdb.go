@@ -17,7 +17,6 @@ type BoltDB struct {
 func (store BoltDB) InitStore(overwrite bool) error {
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
-	checkErr(err)
 	defer db.Close()
 
 	return err

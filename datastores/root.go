@@ -17,9 +17,10 @@ type ConfigItem struct {
 }
 
 type ConfigResponse struct {
-	Status  int64        `json: "status"`
-	Message string       `json: "message"`
-	Data    []ConfigItem `json: "data"`
+	Status  int          `json:"status"`
+	Message string       `json:"message"`
+	Error   error        `json:error`
+	Data    []ConfigItem `json:"data"`
 }
 
 //	ConfigService encapsulates account (user) based operations
