@@ -14,6 +14,9 @@ type BoltDB struct {
 	Password string
 }
 
+//	If we need to list applications, we can do so by listing buckets:
+//	https://github.com/boltdb/bolt/issues/295
+
 func (store BoltDB) InitStore(overwrite bool) error {
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
@@ -33,8 +36,32 @@ func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 		return retval, err
 	}
 
-	//	TODO: Get global first, then get application, then get application + machine
-	//	Get the key based on the application
+	//	Get global first, then get application, then get application + machine
+
+	//	Get the key based on the 'global' application
+	err = db.View(func(tx *bolt.Tx) error {
+		//	Get the item from the bucket with the app name
+		b := tx.Bucket([]byte("*"))
+
+		if b != nil {
+			//	Get the item based on the config name:
+			configBytes := b.Get([]byte(configItem.Name))
+
+			//	Need to make sure we got something back here before we try to unmarshal?
+			if len(configBytes) > 0 {
+				//	Unmarshal data into our config item
+				if err := json.Unmarshal(configBytes, &retval); err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	})
+
+	//	Get the key based on the application (might make sense to switch
+	//	to prefix scans since we're going to be embedding machine name
+	//	at the end of the key: https://github.com/boltdb/bolt#prefix-scans)
 	err = db.View(func(tx *bolt.Tx) error {
 		//	Get the item from the bucket with the app name
 		b := tx.Bucket([]byte(configItem.Application))
@@ -124,6 +151,8 @@ func (store BoltDB) Set(configItem *ConfigItem) error {
 			return err
 		}
 
+		//	TODO: If we have a machine name, encode it in the key:
+
 		//	Store it, with the 'name' as the key:
 		return b.Put([]byte(configItem.Name), encoded)
 	})
@@ -142,14 +171,16 @@ func (store BoltDB) Remove(configItem *ConfigItem) error {
 
 	//	Update the database:
 	err = db.Update(func(tx *bolt.Tx) error {
-		//	Put the item in the bucket with the app name
-		b, err := tx.CreateBucketIfNotExists([]byte(configItem.Application))
-		if err != nil {
-			return err
+
+		//	Get the item from the bucket with the app name
+		b := tx.Bucket([]byte(configItem.Application))
+
+		if b != nil {
+			//	Delete it, with the 'name' as the key:
+			return b.Delete([]byte(configItem.Name))
 		}
 
-		//	Delete it, with the 'name' as the key:
-		return b.Delete([]byte(configItem.Name))
+		return nil
 	})
 
 	return err
