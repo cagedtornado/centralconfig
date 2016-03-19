@@ -2,6 +2,7 @@ package datastores
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/boltdb/bolt"
 )
@@ -113,6 +114,9 @@ func (store BoltDB) Set(configItem *ConfigItem) error {
 		if err != nil {
 			return err
 		}
+
+		//	Set the current datetime:
+		configItem.LastUpdated = time.Now()
 
 		//	Serialize to JSON format
 		encoded, err := json.Marshal(configItem)
