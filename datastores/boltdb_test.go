@@ -84,7 +84,7 @@ func TestBoltDB_Set_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Get failed: BoltDB should have set an item without error: %s", err)
+		t.Errorf("Set failed: BoltDB should have set an item without error: %s", err)
 	}
 }
 
@@ -123,43 +123,6 @@ func TestBoltDB_Set_ThenGet_Successful(t *testing.T) {
 
 	if response.Value != ct2.Value {
 		t.Errorf("Get failed: BoltDB should have returned the value %s but returned %s instead", ct2.Value, response.Value)
-	}
-}
-
-//	Bolt getall should work
-func TestBoltDB_GetAll_Successful(t *testing.T) {
-	//	Arrange
-	filename := "testing.db"
-	defer os.Remove(filename)
-
-	db := datastores.BoltDB{
-		Database: filename}
-
-	ct1 := &datastores.ConfigItem{
-		Application: "MyTestAppName",
-		Name:        "TestItem1",
-		Value:       "Value1"}
-
-	ct2 := &datastores.ConfigItem{
-		Application: "MyTestAppName",
-		Name:        "TestItem2",
-		Value:       "Value2"}
-
-	query := &datastores.ConfigItem{
-		Application: "MyTestAppName"}
-
-	//	Act
-	db.Set(ct1)
-	db.Set(ct2)
-	response, err := db.GetAll(query.Application)
-
-	//	Assert
-	if err != nil {
-		t.Errorf("Get failed: BoltDB should have returned all config items without error: %s", err)
-	}
-
-	if len(response) != 2 {
-		t.Error("Get failed: BoltDB should have returned 2 items")
 	}
 }
 
@@ -270,5 +233,158 @@ func TestBoltDB_Set_ThenGet_WithMachine_Successful(t *testing.T) {
 
 	if response2.Value != ct_withmachine.Value || response2.Machine != ct_withmachine.Machine {
 		t.Errorf("Get (machine specific) failed: BoltDB should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_withmachine.Value, ct_withmachine.Machine, response2.Value, response2.Machine)
+	}
+}
+
+//	Bolt getall should work
+func TestBoltDB_GetAll_NoMachine_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	response, err := db.GetAll(query.Application)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Get failed: BoltDB should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 2 {
+		t.Error("Get failed: BoltDB should have returned 2 items")
+	}
+}
+
+//	Bolt getall should work - even when some items have a specified machine
+func TestBoltDB_GetAll_WithMachine_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Machine:     "APPBOX1",
+		Value:       "Value2"}
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	response, err := db.GetAll(query.Application)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Get failed: BoltDB should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 3 {
+		t.Error("Get failed: BoltDB should have returned 3 items")
+	}
+}
+
+//	Bolt remove should work - even with a non-existant item
+func TestBoltDB_Remove_ItemDoesntExist_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	//	Act
+	err := db.Remove(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Remove failed: BoltDB should have attempted to remove a non-existant item without error: %s", err)
+	}
+}
+
+//	Bolt remove should work
+func TestBoltDB_Remove_NoMachine_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	//	Act
+	db.Set(ct1)
+	err := db.Remove(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Remove failed: BoltDB should have removed an item without error: %s", err)
+	}
+}
+
+//	Bolt remove should work, even with machine specified
+func TestBoltDB_Remove_WithMachine_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Machine:     "APPBOX1",
+		Value:       "Value1"}
+
+	//	Act
+	db.Set(ct1)
+	err := db.Remove(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Remove failed: BoltDB should have removed an item without error: %s", err)
 	}
 }
