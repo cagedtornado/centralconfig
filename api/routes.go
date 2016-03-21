@@ -8,7 +8,7 @@ import (
 	"github.com/danesparza/centralconfig/datastores"
 )
 
-func ShowHelp(rw http.ResponseWriter, req *http.Request) {
+func ShowUI(rw http.ResponseWriter, req *http.Request) {
 	http.Redirect(rw, req, "/ui/", 301)
 }
 

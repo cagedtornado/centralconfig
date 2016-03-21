@@ -40,7 +40,7 @@ func serve(cmd *cobra.Command, args []string) {
 	var Router = mux.NewRouter()
 
 	//	Setup our routes
-	Router.HandleFunc("/", api.ShowHelp)
+	Router.HandleFunc("/", api.ShowUI)
 	Router.HandleFunc("/config/get", api.GetConfig)
 	Router.HandleFunc("/config/set", api.SetConfig)
 	Router.HandleFunc("/config/remove", api.RemoveConfig)
