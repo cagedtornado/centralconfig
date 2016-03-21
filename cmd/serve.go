@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	serverInterface string
-	serverPort      int
+	serverInterface   string
+	serverPort        int
+	serverUIDirectory string
 )
 
 // serveCmd represents the serve command
@@ -45,6 +46,8 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/config/remove", api.RemoveConfig)
 	Router.HandleFunc("/config/getall", api.GetAllConfig)
 	Router.HandleFunc("/config/init", api.InitStore)
+	log.Printf("[INFO] Using UI directory: %s", viper.GetString("http.ui-dir"))
+	Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(serverUIDirectory))))
 
 	log.Printf("[INFO] Starting HTTP server: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
 	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), Router)
@@ -55,9 +58,11 @@ func init() {
 
 	//	Setup our flags
 	serveCmd.Flags().IntVarP(&serverPort, "port", "p", 1313, "port on which the server will listen")
-	serveCmd.Flags().StringVarP(&serverInterface, "bind", "", "127.0.0.1", "interface to which the server will bind")
+	serveCmd.Flags().StringVarP(&serverInterface, "bind", "i", "127.0.0.1", "interface to which the server will bind")
+	serveCmd.Flags().StringVarP(&serverUIDirectory, "ui-dir", "u", "./ui/", "directory for the UI")
 
 	//	Bind config flags for optional config file override:
 	viper.BindPFlag("http.port", serveCmd.Flags().Lookup("port"))
 	viper.BindPFlag("http.bind", serveCmd.Flags().Lookup("bind"))
+	viper.BindPFlag("http.ui-dir", serveCmd.Flags().Lookup("ui-dir"))
 }

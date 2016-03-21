@@ -9,7 +9,7 @@ import (
 )
 
 func ShowHelp(rw http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(rw, "ShowHelp method")
+	http.Redirect(rw, req, "/ui/", 301)
 }
 
 //	Gets a specfic config item based on application and config item name
