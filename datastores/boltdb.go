@@ -36,15 +36,13 @@ func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 		return retval, err
 	}
 
-	//	Get global first, then get application, then get application + machine
-
 	//	Get the key based on the 'global' application
 	err = db.View(func(tx *bolt.Tx) error {
 		//	Get the item from the bucket with the app name
 		b := tx.Bucket([]byte("*"))
 
 		if b != nil {
-			//	Get the item based on the config name:
+			//	TODO: If we have a machine name, encode it in the key:
 			configBytes := b.Get([]byte(configItem.Name))
 
 			//	Need to make sure we got something back here before we try to unmarshal?
@@ -59,16 +57,19 @@ func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 		return nil
 	})
 
-	//	Get the key based on the application (might make sense to switch
-	//	to prefix scans since we're going to be embedding machine name
-	//	at the end of the key: https://github.com/boltdb/bolt#prefix-scans)
+	//	Get the key based on the application name
 	err = db.View(func(tx *bolt.Tx) error {
 		//	Get the item from the bucket with the app name
 		b := tx.Bucket([]byte(configItem.Application))
 
 		if b != nil {
-			//	Get the item based on the config name:
-			configBytes := b.Get([]byte(configItem.Name))
+			//	If we have a machine name, append it in the key:
+			keyName := configItem.Name
+			if configItem.Machine != "" {
+				keyName = keyName + "|" + configItem.Machine
+			}
+
+			configBytes := b.Get([]byte(keyName))
 
 			//	Need to make sure we got something back here before we try to unmarshal?
 			if len(configBytes) > 0 {
@@ -96,7 +97,31 @@ func (store BoltDB) GetAll(application string) ([]ConfigItem, error) {
 		return retval, err
 	}
 
-	//	TODO: Get global first, then get application, then get application + machine
+	//	Get the global app data first:
+	err = db.View(func(tx *bolt.Tx) error {
+
+		//	Get the items from the bucket with the app name
+		b := tx.Bucket([]byte("*"))
+
+		if b != nil {
+
+			c := b.Cursor()
+			for k, v := c.First(); k != nil; k, v = c.Next() {
+
+				//	Unmarshal data into our config item
+				ci := ConfigItem{}
+				if err := json.Unmarshal(v, &ci); err != nil {
+					return err
+				}
+
+				//	Add the item to our list of config items
+				retval = append(retval, ci)
+			}
+		}
+
+		return nil
+	})
+
 	//	Get the key based on the application
 	err = db.View(func(tx *bolt.Tx) error {
 
@@ -121,6 +146,8 @@ func (store BoltDB) GetAll(application string) ([]ConfigItem, error) {
 
 		return nil
 	})
+
+	//	TODO: get application + machine
 
 	return retval, err
 }
@@ -151,10 +178,14 @@ func (store BoltDB) Set(configItem *ConfigItem) error {
 			return err
 		}
 
-		//	TODO: If we have a machine name, encode it in the key:
+		//	If we have a machine name, append it in the key:
+		keyName := configItem.Name
+		if configItem.Machine != "" {
+			keyName = keyName + "|" + configItem.Machine
+		}
 
 		//	Store it, with the 'name' as the key:
-		return b.Put([]byte(configItem.Name), encoded)
+		return b.Put([]byte(keyName), encoded)
 	})
 
 	return err

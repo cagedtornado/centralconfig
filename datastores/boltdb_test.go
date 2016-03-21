@@ -48,7 +48,7 @@ func TestBoltDB_Get_ItemDoesntExist_Successful(t *testing.T) {
 		Database: filename}
 
 	query := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem2"}
 
 	//	Act
@@ -75,7 +75,7 @@ func TestBoltDB_Set_Successful(t *testing.T) {
 
 	//	Try storing some config items:
 	ct1 := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
@@ -98,17 +98,17 @@ func TestBoltDB_Set_ThenGet_Successful(t *testing.T) {
 		Database: filename}
 
 	ct1 := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
 	ct2 := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
 	query := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem2"}
 
 	//	Act
@@ -136,17 +136,17 @@ func TestBoltDB_GetAll_Successful(t *testing.T) {
 		Database: filename}
 
 	ct1 := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
 	ct2 := &datastores.ConfigItem{
-		Application: "Formbuilder",
+		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
 	query := &datastores.ConfigItem{
-		Application: "Formbuilder"}
+		Application: "MyTestAppName"}
 
 	//	Act
 	db.Set(ct1)
@@ -160,5 +160,115 @@ func TestBoltDB_GetAll_Successful(t *testing.T) {
 
 	if len(response) != 2 {
 		t.Error("Get failed: BoltDB should have returned 2 items")
+	}
+}
+
+//	Bolt set then get should work - and default to global settings if
+//	app-specific settings aren't found
+func TestBoltDB_Set_ThenGet_Global_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "*",
+		Name:        "TestItem3",
+		Value:       "Value2"}
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem3"} // This item wasn't set for MyTestAppName - the global default should be used
+
+	query2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2"} // This item WAS set for MyTestAppName
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	response, err := db.Get(query)
+	response2, err2 := db.Get(query2)
+
+	//	Assert
+	if err != nil || err2 != nil {
+		t.Errorf("Get failed: BoltDB should have returned a config item without error: %s", err)
+	}
+
+	if response.Value != ct3.Value {
+		t.Errorf("Get (global) failed: BoltDB should have returned the value %s but returned %s instead", ct3.Value, response.Value)
+	}
+
+	if response2.Value != ct2.Value {
+		t.Errorf("Get failed: BoltDB should have returned the value %s but returned %s instead", ct2.Value, response2.Value)
+	}
+}
+
+//	Bolt set then get should work - and default to global settings if
+//	app-specific settings aren't found
+func TestBoltDB_Set_ThenGet_WithMachine_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct_nomachine := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2_NO_MACHINE"}
+
+	ct_withmachine := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Machine:     "APPBOX1", // This config item is machine specific
+		Value:       "Value2_SET_WITH_MACHINE"}
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2"}
+
+	query2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Machine:     "APPBOX1", // Notice that this has a machine in the query
+		Name:        "TestItem2"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct_nomachine)
+	db.Set(ct_withmachine)
+	response, err := db.Get(query)
+	response2, err2 := db.Get(query2)
+
+	//	Assert
+	if err != nil || err2 != nil {
+		t.Errorf("Get failed: BoltDB should have returned a config item without error: %s", err)
+	}
+
+	if response.Value != ct_nomachine.Value || response.Machine != ct_nomachine.Machine {
+		t.Errorf("Get (not machine specific) failed: BoltDB should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_nomachine.Value, ct_nomachine.Machine, response.Value, response.Machine)
+	}
+
+	if response2.Value != ct_withmachine.Value || response2.Machine != ct_withmachine.Machine {
+		t.Errorf("Get (machine specific) failed: BoltDB should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_withmachine.Value, ct_withmachine.Machine, response2.Value, response2.Machine)
 	}
 }
