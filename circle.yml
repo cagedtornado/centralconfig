@@ -3,6 +3,11 @@ dependencies:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
 
+test:
+  override:
+    - go get -u github.com/jstemmer/go-junit-report
+    - go test -v ./... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
+
 deployment:
   release:
     branch: master
