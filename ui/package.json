@@ -1,0 +1,49 @@
+{
+  "name": "centralconfig",
+  "description": "CentralConfig UI dashboard",
+  "version": "0.1.0",
+  "author": "Dan Esparza",
+  "browserify": {
+    "transform": [
+      "babelify",
+      "envify"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/danesparza/centralconfig/issues"
+  },
+  "dependencies": {
+    "cookies-js": "^1.0.0",
+    "director": "^1.2.7",
+    "flux": "^2.1.1",
+    "keymirror": "~0.1.0",
+    "moment": "^2.9.0",
+    "moment-timezone": "^0.3.0",
+    "object-assign": "^1.0.0",
+    "react": "^0.14.7"
+  },
+  "devDependencies": {
+    "babelify": "^6.3.0",
+    "browserify": "^6.2.0",
+    "envify": "^3.0.0",
+    "uglify-js": "~2.4.15",
+    "watchify": "^2.1.1"
+  },
+  "keywords": [
+    "config",
+    "configuration",
+    "appconfig",
+    "appsettings",
+    "dashboard"
+  ],
+  "license": "MIT",
+  "main": "js/app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danesparza/centralconfig.git"
+  },
+  "scripts": {
+    "build": "browserify js/app.js -t babelify | uglifyjs -cm > js/bundle.js",
+    "start": "watchify -v -t babelify js/app.js -o js/bundle.js"
+  }
+}
