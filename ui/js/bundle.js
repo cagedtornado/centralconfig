@@ -115,15 +115,48 @@ module.exports = exports['default'];
 
 "use strict";
 
+var _createClass = (function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+})();
+
 function _classCallCheck(instance, Constructor) {
-	if (!(instance instanceof Constructor)) {
-		throw new TypeError("Cannot call a class as a function");
-	}
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
 }
 
-var CentralConfigAPIUtils = function CentralConfigAPIUtils() {
-	_classCallCheck(this, CentralConfigAPIUtils);
-};
+var CentralConfigAPIUtils = (function () {
+  function CentralConfigAPIUtils() {
+    _classCallCheck(this, CentralConfigAPIUtils);
+  }
+
+  //	Gets all configuration items from the server
+
+  _createClass(CentralConfigAPIUtils, [{
+    key: "getAllConfigItems",
+    value: function getAllConfigItems() {
+
+      //  Format the url
+      var url = "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (SELECT woeid FROM geo.placefinder WHERE text=\"" + latitude + "," + longitude + "\" and gflags=\"R\")&format=json";
+
+      $.ajax(url).done((function (data) {
+        //  Call the action to receive the data:
+        //	WeatherActions.recieveWeatherData(weatherdata);
+      }).bind(this)).fail(function () {
+        //  Something bad happened
+        console.log("There was a problem getting config items");
+      });
+    }
+  }]);
+
+  return CentralConfigAPIUtils;
+})();
 
 },{}],4:[function(require,module,exports){
 /**
