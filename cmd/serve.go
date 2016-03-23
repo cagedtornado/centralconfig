@@ -45,7 +45,10 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/config/set", api.SetConfig)
 	Router.HandleFunc("/config/remove", api.RemoveConfig)
 	Router.HandleFunc("/config/getall", api.GetAllConfig)
+	Router.HandleFunc("/config/getallforapp", api.GetAllConfigForApp)
 	Router.HandleFunc("/config/init", api.InitStore)
+	Router.HandleFunc("/applications/getall", api.GetAllApplications)
+
 	log.Printf("[INFO] Using UI directory: %s", viper.GetString("http.ui-dir"))
 	Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(serverUIDirectory))))
 

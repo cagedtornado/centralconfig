@@ -99,7 +99,7 @@ func RemoveConfig(rw http.ResponseWriter, req *http.Request) {
 }
 
 //	Gets all config information for a given application
-func GetAllConfig(rw http.ResponseWriter, req *http.Request) {
+func GetAllConfigForApp(rw http.ResponseWriter, req *http.Request) {
 	//	req.Body is a ReadCloser -- we need to remember to close it:
 	defer req.Body.Close()
 
@@ -115,7 +115,7 @@ func GetAllConfig(rw http.ResponseWriter, req *http.Request) {
 	ds := datastores.GetConfigDatastore()
 
 	//	Send the request to the datastore and get a response:
-	configItems, err := ds.GetAll(request.Application)
+	configItems, err := ds.GetAllForApplication(request.Application)
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 		return
@@ -128,6 +128,54 @@ func GetAllConfig(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	sendDataResponse(rw, "No config items found with that application", configItems)
+}
+
+//	Gets all config information
+func GetAllConfig(rw http.ResponseWriter, req *http.Request) {
+	//	req.Body is a ReadCloser -- we need to remember to close it:
+	defer req.Body.Close()
+
+	//	Get the current datastore:
+	ds := datastores.GetConfigDatastore()
+
+	//	Send the request to the datastore and get a response:
+	configItems, err := ds.GetAll()
+	if err != nil {
+		sendErrorResponse(rw, err, http.StatusInternalServerError)
+		return
+	}
+
+	//	If we found an item, return it (otherwise, return an empty array):
+	if len(configItems) > 0 {
+		sendDataResponse(rw, "Config items found", configItems)
+		return
+	}
+
+	sendDataResponse(rw, "No config items found", configItems)
+}
+
+//	Gets all applications
+func GetAllApplications(rw http.ResponseWriter, req *http.Request) {
+	//	req.Body is a ReadCloser -- we need to remember to close it:
+	defer req.Body.Close()
+
+	//	Get the current datastore:
+	ds := datastores.GetConfigDatastore()
+
+	//	Send the request to the datastore and get a response:
+	applications, err := ds.GetAllApplications()
+	if err != nil {
+		sendErrorResponse(rw, err, http.StatusInternalServerError)
+		return
+	}
+
+	//	If we found an item, return it (otherwise, return an empty array):
+	if len(applications) > 0 {
+		sendDataResponse(rw, "Applications found", applications)
+		return
+	}
+
+	sendDataResponse(rw, "No config items found", applications)
 }
 
 //	Initializes a store
@@ -149,12 +197,12 @@ func sendErrorResponse(rw http.ResponseWriter, err error, code int) {
 }
 
 //	Used to send back a response with data
-func sendDataResponse(rw http.ResponseWriter, message string, configItems []datastores.ConfigItem) {
+func sendDataResponse(rw http.ResponseWriter, message string, dataItems interface{}) {
 	//	Our return value
 	response := datastores.ConfigResponse{
 		Status:  http.StatusOK,
 		Message: message,
-		Data:    configItems}
+		Data:    dataItems}
 
 	//	Serialize to JSON & return the response:
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")

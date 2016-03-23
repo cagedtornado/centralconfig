@@ -236,8 +236,8 @@ func TestBoltDB_Set_ThenGet_WithMachine_Successful(t *testing.T) {
 	}
 }
 
-//	Bolt getall should work
-func TestBoltDB_GetAll_NoMachine_Successful(t *testing.T) {
+//	Bolt GetAllForApplication should work
+func TestBoltDB_GetAllForApplication_NoMachine_Successful(t *testing.T) {
 	//	Arrange
 	filename := "testing.db"
 	defer os.Remove(filename)
@@ -261,20 +261,20 @@ func TestBoltDB_GetAll_NoMachine_Successful(t *testing.T) {
 	//	Act
 	db.Set(ct1)
 	db.Set(ct2)
-	response, err := db.GetAll(query.Application)
+	response, err := db.GetAllForApplication(query.Application)
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Get failed: BoltDB should have returned all config items without error: %s", err)
+		t.Errorf("GetAllForApplication failed: BoltDB should have returned all config items without error: %s", err)
 	}
 
 	if len(response) != 2 {
-		t.Error("Get failed: BoltDB should have returned 2 items")
+		t.Error("GetAllForApplication failed: BoltDB should have returned 2 items")
 	}
 }
 
-//	Bolt getall should work - even when some items have a specified machine
-func TestBoltDB_GetAll_WithMachine_Successful(t *testing.T) {
+//	Bolt GetAllForApplication should work - even when some items have a specified machine
+func TestBoltDB_GetAllForApplication_WithMachine_Successful(t *testing.T) {
 	//	Arrange
 	filename := "testing.db"
 	defer os.Remove(filename)
@@ -305,15 +305,129 @@ func TestBoltDB_GetAll_WithMachine_Successful(t *testing.T) {
 	db.Set(ct1)
 	db.Set(ct2)
 	db.Set(ct3)
-	response, err := db.GetAll(query.Application)
+	response, err := db.GetAllForApplication(query.Application)
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Get failed: BoltDB should have returned all config items without error: %s", err)
+		t.Errorf("GetAllForApplication failed: BoltDB should have returned all config items without error: %s", err)
 	}
 
 	if len(response) != 3 {
-		t.Error("Get failed: BoltDB should have returned 3 items")
+		t.Error("GetAllForApplication failed: BoltDB should have returned 3 items")
+	}
+}
+
+//	Bolt getall should work
+func TestBoltDB_GetAll_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "OtherTestApp",
+		Name:        "TestItem3",
+		Value:       "Value2"}
+
+	ct4 := &datastores.ConfigItem{
+		Application: "*",
+		Name:        "TestItem4",
+		Value:       "Value2"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	db.Set(ct4)
+	response, err := db.GetAll()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAll failed: BoltDB should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 4 {
+		t.Error("GetAll failed: BoltDB should have returned 4 items")
+	}
+}
+
+//	Bolt getall should work
+func TestBoltDB_GetAllApplications_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "OtherTestApp",
+		Name:        "TestItem3",
+		Value:       "Value2"}
+
+	ct4 := &datastores.ConfigItem{
+		Application: "*",
+		Name:        "TestItem4",
+		Value:       "Value2"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	db.Set(ct4)
+	response, err := db.GetAllApplications()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAllApplications failed: BoltDB should have returned all applications without error: %s", err)
+	}
+
+	if len(response) != 3 {
+		t.Error("GetAllApplications failed: BoltDB should have returned the correct number of applications")
+	}
+}
+
+//	Bolt getall should work
+func TestBoltDB_GetAllApplications_NoData_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	//	Act
+	response, err := db.GetAllApplications()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAllApplications failed: BoltDB should have returned all applications without error: %s", err)
+	}
+
+	if len(response) != 0 {
+		t.Error("GetAllApplications failed: BoltDB should have returned the correct number of applications")
 	}
 }
 

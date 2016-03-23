@@ -17,9 +17,9 @@ type ConfigItem struct {
 }
 
 type ConfigResponse struct {
-	Status  int          `json:"status"`
-	Message string       `json:"message"`
-	Data    []ConfigItem `json:"data"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 //	ConfigService encapsulates account (user) based operations
@@ -38,7 +38,13 @@ type ConfigService interface {
 	Get(c *ConfigItem) (ConfigItem, error)
 
 	//	Get all config items for the given application
-	GetAll(application string) ([]ConfigItem, error)
+	GetAllForApplication(application string) ([]ConfigItem, error)
+
+	//	Get all config items for all applications (including global)
+	GetAll() ([]ConfigItem, error)
+
+	//	Get all applications (including global)
+	GetAllApplications() ([]string, error)
 
 	//	Remove a config item
 	Remove(c *ConfigItem) error

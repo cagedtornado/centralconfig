@@ -86,7 +86,7 @@ func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	return retval, err
 }
 
-func (store BoltDB) GetAll(application string) ([]ConfigItem, error) {
+func (store BoltDB) GetAllForApplication(application string) ([]ConfigItem, error) {
 	//	Our return items:
 	retval := []ConfigItem{}
 
@@ -150,6 +150,81 @@ func (store BoltDB) GetAll(application string) ([]ConfigItem, error) {
 	//	TODO: get application + machine
 
 	return retval, err
+}
+
+func (store BoltDB) GetAll() ([]ConfigItem, error) {
+
+	//	Our return items:
+	retval := []ConfigItem{}
+	var bucketList []string
+
+	//	Open the database:
+	db, err := bolt.Open(store.Database, 0600, nil)
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get a list of all buckets
+	err = db.View(func(tx *bolt.Tx) error {
+		return tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
+			bucketList = append(bucketList, string(name))
+			return nil
+		})
+	})
+
+	//	For each bucket...
+	for _, bucketName := range bucketList {
+
+		//	... get a list of configitems for that bucket
+		err = db.View(func(tx *bolt.Tx) error {
+
+			b := tx.Bucket([]byte(bucketName))
+
+			if b != nil {
+
+				c := b.Cursor()
+				for k, v := c.First(); k != nil; k, v = c.Next() {
+
+					//	Unmarshal data into our config item
+					ci := ConfigItem{}
+					if err := json.Unmarshal(v, &ci); err != nil {
+						return err
+					}
+
+					//	Add the item to our list of config items
+					retval = append(retval, ci)
+				}
+			}
+
+			return nil
+		})
+	}
+
+	return retval, err
+}
+
+func (store BoltDB) GetAllApplications() ([]string, error) {
+
+	//	Our return items:
+	var bucketList []string
+
+	//	Open the database:
+	db, err := bolt.Open(store.Database, 0600, nil)
+	defer db.Close()
+	if err != nil {
+		return bucketList, err
+	}
+
+	//	Get a list of all buckets
+	err = db.View(func(tx *bolt.Tx) error {
+		return tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
+			bucketList = append(bucketList, string(name))
+			return nil
+		})
+	})
+
+	return bucketList, err
 }
 
 func (store BoltDB) Set(configItem *ConfigItem) error {
