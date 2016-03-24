@@ -80,11 +80,15 @@ func TestBoltDB_Set_Successful(t *testing.T) {
 		Value:       "Value1"}
 
 	//	Act
-	err := db.Set(ct1)
+	response, err := db.Set(ct1)
 
 	//	Assert
 	if err != nil {
 		t.Errorf("Set failed: BoltDB should have set an item without error: %s", err)
+	}
+
+	if ct1.Id == response.Id {
+		t.Error("Set failed: BoltDB should have set an item with the correct id")
 	}
 }
 

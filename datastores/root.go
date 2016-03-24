@@ -32,7 +32,7 @@ type ConfigService interface {
 	InitStore(overwrite bool) error
 
 	//	Create / update a config item
-	Set(c *ConfigItem) error
+	Set(c *ConfigItem) (ConfigItem, error)
 
 	//	Get a specific config item
 	Get(c *ConfigItem) (ConfigItem, error)

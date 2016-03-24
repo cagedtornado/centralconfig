@@ -63,11 +63,11 @@ func SetConfig(rw http.ResponseWriter, req *http.Request) {
 	ds := datastores.GetConfigDatastore()
 
 	//	Send the request to the datastore and get a response:
-	err = ds.Set(request)
+	response, err := ds.Set(request)
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
-		configItems := append([]datastores.ConfigItem{}, *request)
+		configItems := append([]datastores.ConfigItem{}, response)
 		sendDataResponse(rw, "Config item updated", configItems)
 	}
 }

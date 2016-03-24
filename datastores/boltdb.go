@@ -227,13 +227,16 @@ func (store BoltDB) GetAllApplications() ([]string, error) {
 	return bucketList, err
 }
 
-func (store BoltDB) Set(configItem *ConfigItem) error {
+func (store BoltDB) Set(configItem *ConfigItem) (ConfigItem, error) {
+
+	//	Our return item:
+	retval := *configItem
 
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
 	defer db.Close()
 	if err != nil {
-		return err
+		return retval, err
 	}
 
 	//	Update the database:
@@ -242,6 +245,14 @@ func (store BoltDB) Set(configItem *ConfigItem) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(configItem.Application))
 		if err != nil {
 			return err
+		}
+
+		// If we don't have an id, generate an id for the configitem.
+		// This returns an error only if the Tx is closed or not writeable.
+		// That can't happen in an Update() call so I ignore the error check.
+		if configItem.Id == 0 {
+			id, _ := b.NextSequence()
+			configItem.Id = int64(id)
 		}
 
 		//	Set the current datetime:
@@ -263,7 +274,7 @@ func (store BoltDB) Set(configItem *ConfigItem) error {
 		return b.Put([]byte(keyName), encoded)
 	})
 
-	return err
+	return retval, err
 }
 
 func (store BoltDB) Remove(configItem *ConfigItem) error {
