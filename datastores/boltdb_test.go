@@ -367,7 +367,28 @@ func TestBoltDB_GetAll_Successful(t *testing.T) {
 	}
 }
 
-//	Bolt getall should work
+//	Bolt getall should work - even with no initial data
+func TestBoltDB_GetAll_NoInitialData_Successful(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	response, err := db.GetAll()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAll (no initial data) failed: BoltDB should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 0 {
+		t.Error("GetAll (no initial data) failed: BoltDB should have returned 0 items")
+	}
+}
+
+//	Bolt GetAllApplications should work
 func TestBoltDB_GetAllApplications_Successful(t *testing.T) {
 	//	Arrange
 	filename := "testing.db"

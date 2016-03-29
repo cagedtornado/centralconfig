@@ -51,5 +51,21 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
 		log.Printf("[ERROR] Problem reading config file: %s\n", err)
+		fmt.Println(`
+	There was a problem reading the server configuration file.  
+	If you need help creating a configuration file, you can use 
+	the 'defaults' command to generate a new server configuration file.  
+	Use "centralconfig defaults --help" if you need help.
+
+	Quick start:
+	To generate a server configuration file, run the following command: 
+
+	centralconfig defaults > centralconfig.yaml
+			`)
+
+		//	We really shouldn't proceed.
+		//	Use non-zero status to indicate failure.
+		//	from https://golang.org/pkg/os/#Exit
+		os.Exit(1)
 	}
 }
