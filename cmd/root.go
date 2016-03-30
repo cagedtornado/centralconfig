@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,6 +9,7 @@ import (
 )
 
 var cfgFile string
+var ProblemWithConfigFile bool
 
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -48,24 +48,9 @@ func initConfig() {
 	viper.AddConfigPath(".")             // also look in the working directory
 	viper.AutomaticEnv()                 // read in environment variables that match
 
-	// If a config file is found, read it in.
+	// If a config file is found, read it in
+	// otherwise, make note that there was a problem
 	if err := viper.ReadInConfig(); err != nil {
-		log.Printf("[ERROR] Problem reading config file: %s\n", err)
-		fmt.Println(`
-	There was a problem reading the server configuration file.  
-	If you need help creating a configuration file, you can use 
-	the 'defaults' command to generate a new server configuration file.  
-	Use "centralconfig defaults --help" if you need help.
-
-	Quick start:
-	To generate a server configuration file, run the following command: 
-
-	centralconfig defaults > centralconfig.yaml
-			`)
-
-		//	We really shouldn't proceed.
-		//	Use non-zero status to indicate failure.
-		//	from https://golang.org/pkg/os/#Exit
-		os.Exit(1)
+		ProblemWithConfigFile = true
 	}
 }

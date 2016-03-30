@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/danesparza/centralconfig/api"
 
@@ -27,6 +29,26 @@ var serveCmd = &cobra.Command{
 }
 
 func serve(cmd *cobra.Command, args []string) {
+
+	if ProblemWithConfigFile == true {
+		fmt.Println(`
+	There was a problem reading the server configuration file.  
+	
+	If you need help creating a configuration file, you can use 
+	the 'defaults' command to generate a new server configuration file.  
+	Use "centralconfig defaults --help" if you need help.
+
+	=== Quick start === 
+	To generate a server configuration file, run the following command: 
+	
+	centralconfig defaults > centralconfig.yaml
+			`)
+
+		//	We really shouldn't proceed.
+		//	Use non-zero status to indicate failure.
+		//	from https://golang.org/pkg/os/#Exit
+		os.Exit(1)
+	}
 
 	//	If we have a config file, report it:
 	if viper.ConfigFileUsed() != "" {
