@@ -36,14 +36,20 @@ func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 		return retval, err
 	}
 
+	//	If we have a machine name, append it in the key:
+	keyName := configItem.Name
+	if configItem.Machine != "" {
+		keyName = keyName + "|" + configItem.Machine
+	}
+
 	//	Get the key based on the 'global' application
 	err = db.View(func(tx *bolt.Tx) error {
 		//	Get the item from the bucket with the app name
 		b := tx.Bucket([]byte("*"))
 
 		if b != nil {
-			//	TODO: If we have a machine name, encode it in the key:
-			configBytes := b.Get([]byte(configItem.Name))
+
+			configBytes := b.Get([]byte(keyName))
 
 			//	Need to make sure we got something back here before we try to unmarshal?
 			if len(configBytes) > 0 {
@@ -63,11 +69,6 @@ func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 		b := tx.Bucket([]byte(configItem.Application))
 
 		if b != nil {
-			//	If we have a machine name, append it in the key:
-			keyName := configItem.Name
-			if configItem.Machine != "" {
-				keyName = keyName + "|" + configItem.Machine
-			}
 
 			configBytes := b.Get([]byte(keyName))
 
@@ -293,8 +294,15 @@ func (store BoltDB) Remove(configItem *ConfigItem) error {
 		b := tx.Bucket([]byte(configItem.Application))
 
 		if b != nil {
+
+			//	If we have a machine name, append it in the key:
+			keyName := configItem.Name
+			if configItem.Machine != "" {
+				keyName = keyName + "|" + configItem.Machine
+			}
+
 			//	Delete it, with the 'name' as the key:
-			return b.Delete([]byte(configItem.Name))
+			return b.Delete([]byte(keyName))
 		}
 
 		return nil
