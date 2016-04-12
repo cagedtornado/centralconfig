@@ -71,8 +71,16 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/config/init", api.InitStore)
 	Router.HandleFunc("/applications/getall", api.GetAllApplications)
 
-	log.Printf("[INFO] Using UI directory: %s", viper.GetString("http.ui-dir"))
-	Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(serverUIDirectory))))
+	//	Use the static assets file generated with
+	//	https://github.com/elazarl/go-bindata-assetfs using the centralconfig-ui from
+	//	https://github.com/danesparza/centralconfig-ui.
+	//
+	//	To generate this file, place the 'ui'
+	//	directory under the main centralconfig directory and run the commands:
+	//	go-bindata-assetfs.exe -pkg cmd ./ui/...
+	//	mv bindata_assetfs.go cmd
+	//	go install ./...
+	Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(assetFS())))
 
 	log.Printf("[INFO] Starting HTTP server: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
 	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), Router)
