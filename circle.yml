@@ -1,5 +1,14 @@
+checkout:
+  post:
+    - git clone https://github.com/danesparza/centralconfig-ui.git
+
 dependencies:
+  pre:
+    - go get github.com/jteeuwen/go-bindata/...
+    - go get github.com/elazarl/go-bindata-assetfs/...
+    - env
   override:
+    - cd centralconfig-ui; npm install; npm run build
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
 
