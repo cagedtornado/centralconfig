@@ -12,8 +12,8 @@ dependencies:
   override:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
-    - cp -r /tmp/ui $GOPATH/src/github.com/danesparza/centralconfig
-    - cd $GOPATH/src/github.com/danesparza/centralconfig; go-bindata-assetfs -pkg cmd ./ui/...; mv bindata_assetfs.go cmd
+    - cp -r /tmp/ui $PWD
+    - cd $PWD; go-bindata-assetfs -pkg cmd ./ui/...; mv bindata_assetfs.go cmd
 test:
   pre: 
     - go get -u github.com/jstemmer/go-junit-report
