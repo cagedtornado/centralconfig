@@ -26,6 +26,6 @@ deployment:
     branch: master
     commands:
     - go get github.com/mitchellh/gox
-    - gox -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}"
+    - gox -ldflags "-X github.com/danesparza/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/danesparza/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}"
     - go get github.com/tcnksm/ghr
     - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/
