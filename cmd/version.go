@@ -34,7 +34,7 @@ var versionCmd = &cobra.Command{
 
 		//	Show the commitid if available:
 		if commitId != "" {
-			fmt.Printf(" (%s)", commitId)
+			fmt.Printf(" (%s)", commitId[:7])
 		}
 	},
 }
