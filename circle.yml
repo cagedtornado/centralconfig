@@ -9,12 +9,11 @@ dependencies:
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
     - cd centralconfig-ui; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp index.html /tmp/ui
-    - cp -r /tmp/ui $GOPATH/src/github.com/danesparza/centralconfig
-    - cd $GOPATH/src/github.com/danesparza/centralconfig; go-bindata-assetfs -pkg cmd ./ui/...; mv bindata_assetfs.go cmd
   override:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
-
+    - cp -r /tmp/ui $GOPATH/src/github.com/danesparza/centralconfig
+    - cd $GOPATH/src/github.com/danesparza/centralconfig; go-bindata-assetfs -pkg cmd ./ui/...; mv bindata_assetfs.go cmd
 test:
   pre: 
     - go get -u github.com/jstemmer/go-junit-report
