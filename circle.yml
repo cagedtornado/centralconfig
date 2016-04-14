@@ -1,13 +1,20 @@
+machine:
+  environment:
+    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
 checkout:
   post:
     - git clone https://github.com/danesparza/centralconfig-ui.git
 dependencies:
-  override:
-    - echo .
-test:
-  pre: 
+  override:    
+    - mkdir -p "$GOPATH/src/$IMPORT_PATH"
+    - rsync -azC --delete ./ "$GOPATH/src/$IMPORT_PATH/"
+    - go get github.com/mitchellh/gox
+    - go get github.com/tcnksm/ghr
     - go get github.com/jteeuwen/go-bindata/...
     - go get github.com/elazarl/go-bindata-assetfs/...
+    - go get -u github.com/jstemmer/go-junit-report
+test:
+  pre:         
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
     - cd centralconfig-ui; git describe --tags; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp index.html /tmp/ui
@@ -15,15 +22,13 @@ test:
     - go get -t -d -v ./...
     - cp -r /tmp/ui $PWD
     - cd $PWD; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd
-    - go get -u github.com/jstemmer/go-junit-report
+    - go vet ./...    
     - mkdir $CIRCLE_TEST_REPORTS/junit
   post:    
     - go test -v -race ./... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
 deployment:
   release:
     branch: master
-    commands:
-    - go get github.com/mitchellh/gox
-    - gox -ldflags "-X github.com/danesparza/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/danesparza/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}"
-    - go get github.com/tcnksm/ghr
+    commands:  
+    - gox -ldflags "-X github.com/danesparza/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/danesparza/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}"    
     - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/ || true
