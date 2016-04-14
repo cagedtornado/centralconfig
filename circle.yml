@@ -2,19 +2,19 @@ checkout:
   post:
     - git clone https://github.com/danesparza/centralconfig-ui.git
 dependencies:
-  pre:
+  override:
+    - echo .
+test:
+  pre: 
     - go get github.com/jteeuwen/go-bindata/...
     - go get github.com/elazarl/go-bindata-assetfs/...
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
     - cd centralconfig-ui; git describe --tags; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp index.html /tmp/ui
-  override:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
     - cp -r /tmp/ui $PWD
     - cd $PWD; go-bindata-assetfs -pkg cmd ./ui/...; ls -l; mv bindata_assetfs.go cmd; ls -l
-test:
-  pre: 
     - go get -u github.com/jstemmer/go-junit-report
     - mkdir $CIRCLE_TEST_REPORTS/junit
   post:    
