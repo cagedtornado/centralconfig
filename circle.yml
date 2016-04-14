@@ -1,7 +1,7 @@
 machine:
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
-    PROJECT_DIR: "~/.go_workspace/src/$IMPORT_PATH"
+    PROJECT_DIR: "/home/ubuntu/.go_workspace/src/$IMPORT_PATH"
 checkout:
   post:
     - git clone https://github.com/danesparza/centralconfig-ui.git
@@ -26,8 +26,10 @@ test:
   pre:
     - go vet -x $IMPORT_PATH/...    
     - mkdir $CIRCLE_TEST_REPORTS/junit
+  override:
+    - go test -v -race $IMPORT_PATH/...
   post:    
-    - go test -v -race ./... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
+    - go test -v -race $IMPORT_PATH/... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
 deployment:
   release:
     branch: master
