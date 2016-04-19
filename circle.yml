@@ -2,15 +2,13 @@ machine:
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
     PROJECT_DIR: "/home/ubuntu/.go_workspace/src/$IMPORT_PATH"
-database:
-  override:
-    - mysql -V
-    - mysql circle_test < mysql.sql
 checkout:
   post:
     - git clone https://github.com/danesparza/centralconfig-ui.git
 dependencies:
   pre:
+    - sudo apt-add-repository -y 'deb http://ppa.launchpad.net/ondrej/mysql-experimental/ubuntu precise main'
+    - sudo apt-get update; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6
     - go get github.com/mitchellh/gox
     - go get github.com/tcnksm/ghr
     - go get github.com/jteeuwen/go-bindata/...
@@ -26,6 +24,10 @@ dependencies:
     - cp -r /tmp/ui $PROJECT_DIR
     - ls -l $PROJECT_DIR
     - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd 
+database:
+  override:
+    - mysql -V
+    - mysql circle_test < mysql.sql
 test:
   pre:
     - go vet -x $IMPORT_PATH/...    
