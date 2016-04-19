@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var dbDefault = []byte(`
+var dbCreate = []byte(`
 CREATE TABLE configitem (
   id int(11) NOT NULL AUTO_INCREMENT,
   application varchar(100) NOT NULL DEFAULT '*',

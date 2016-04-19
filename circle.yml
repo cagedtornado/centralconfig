@@ -2,6 +2,10 @@ machine:
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
     PROJECT_DIR: "/home/ubuntu/.go_workspace/src/$IMPORT_PATH"
+database:
+  override:
+    - mysql -V
+    - mysql circle_test < mysql.sql
 checkout:
   post:
     - git clone https://github.com/danesparza/centralconfig-ui.git
