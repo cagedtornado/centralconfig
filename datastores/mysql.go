@@ -1,9 +1,7 @@
 package datastores
 
 import (
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -19,6 +17,18 @@ type MySqlDB struct {
 }
 
 func (store MySqlDB) InitStore(overwrite bool) error {
+	//	Open the database:
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s", store.User, store.Password, store.Protocol, store.Address, store.Database))
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+
+	// Open doesn't open a connection. Validate DSN data:
+	err = db.Ping()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -41,7 +51,7 @@ func (store MySqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	}
 
 	for rows.Next() {
-		var id int
+		var id int64
 		var application string
 		var name string
 		var value string
