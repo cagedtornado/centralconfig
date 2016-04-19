@@ -1,6 +1,7 @@
 package datastores_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/danesparza/centralconfig/datastores"
@@ -10,10 +11,10 @@ func getDBConnection() datastores.MySqlDB {
 
 	//	Set this information from environment variables?
 	return datastores.MySqlDB{
-		Address:  "", /* If this is blank, it assumes a local database on port 3306 */
-		Database: "centralconfig",
-		User:     "", /* Set user here*/
-		Password: ""} /* Set password here*/
+		Address:  os.Getenv("centralconfig.test_server"), /* Ex: test-server:3306 If this is blank, it assumes a local database on port 3306 */
+		Database: os.Getenv("centralconfig.test_database"),
+		User:     os.Getenv("centralconfig.test_user"),
+		Password: os.Getenv("centralconfig.test_password")}
 }
 
 //	Bolt init should create a new BoltDB file
