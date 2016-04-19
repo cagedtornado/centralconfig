@@ -60,7 +60,14 @@ func (store MySqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	}
 
 	//	Query to get default first
-	rows, err := db.Query("select id, application, name, value, machine, updated where application=? and name=? and machine=?", configItem.Application, configItem.Name, "*")
+	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=? and name=? and machine=?")
+	if err != nil {
+		return retval, err
+	}
+	defer stmt.Close()
+
+	//	Query to get default first
+	rows, err := stmt.Query("*", configItem.Name, "")
 	if err != nil {
 		return retval, err
 	}
