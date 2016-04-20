@@ -63,13 +63,14 @@ func (store MySqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 
 	//	Prepare our query
 	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=? and name=? and machine=?")
+	defer stmt.Close()
 	if err != nil {
 		return retval, err
 	}
-	defer stmt.Close()
 
 	//	Get the application/name/machine combo
 	rows, err := stmt.Query(configItem.Application, configItem.Name, configItem.Machine)
+	defer rows.Close()
 	if err != nil {
 		return retval, err
 	}
@@ -104,6 +105,7 @@ func (store MySqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	//	If we haven't found it, get the application/name combo with a blank machine name
 	if retval.Id == 0 {
 		rows, err = stmt.Query(configItem.Application, configItem.Name, "")
+		defer rows.Close()
 		if err != nil {
 			return retval, err
 		}
@@ -139,6 +141,7 @@ func (store MySqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	//	If we still haven't found it, get the default application/name and blank machine name
 	if retval.Id == 0 {
 		rows, err = stmt.Query("*", configItem.Name, "")
+		defer rows.Close()
 		if err != nil {
 			return retval, err
 		}
@@ -198,6 +201,61 @@ func (store MySqlDB) GetAllApplications() ([]string, error) {
 func (store MySqlDB) Set(configItem *ConfigItem) (ConfigItem, error) {
 	//	Our return item:
 	retval := ConfigItem{}
+
+	//	Open the database:
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?parseTime=true", store.User, store.Password, store.Protocol, store.Address, store.Database))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	if configItem.Id == 0 {
+		//	If we have a brand new item, insert it
+		stmt, err := db.Prepare("insert into configitem(application, name, value, machine) values(?, ?, ?, ?)")
+		defer stmt.Close()
+		if err != nil {
+			return retval, err
+		}
+
+		res, err := stmt.Exec(configItem.Application, configItem.Name, configItem.Value, configItem.Machine)
+		if err != nil {
+			return retval, err
+		}
+
+		lastId, err := res.LastInsertId()
+		if err != nil {
+			return retval, err
+		}
+
+		retval = ConfigItem{
+			Id:          lastId,
+			Application: configItem.Application,
+			Name:        configItem.Name,
+			Value:       configItem.Value,
+			Machine:     configItem.Machine,
+			LastUpdated: time.Now()}
+
+	} else {
+		//	If we have an existing id, just update the old item
+		stmt, err := db.Prepare("update configitem set application=?, name=?, value=?, machine=? where id=?")
+		defer stmt.Close()
+		if err != nil {
+			return retval, err
+		}
+
+		_, err = stmt.Exec(configItem.Application, configItem.Name, configItem.Value, configItem.Machine, configItem.Id)
+		if err != nil {
+			return retval, err
+		}
+
+		retval = ConfigItem{
+			Id:          configItem.Id,
+			Application: configItem.Application,
+			Name:        configItem.Name,
+			Value:       configItem.Value,
+			Machine:     configItem.Machine,
+			LastUpdated: time.Now()}
+	}
 
 	return retval, nil
 }

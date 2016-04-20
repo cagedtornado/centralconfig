@@ -17,7 +17,7 @@ func getDBConnection() datastores.MySqlDB {
 		Password: os.Getenv("centralconfig_test_mysql_password")}
 }
 
-//	Bolt init should create a new BoltDB file
+//	MySQL init should ping the database
 func TestMysql_Init_Successful(t *testing.T) {
 	//	Arrange
 	db := getDBConnection()
@@ -31,7 +31,7 @@ func TestMysql_Init_Successful(t *testing.T) {
 	}
 }
 
-//	Bolt get should return successfully even if the item doesn't exist
+//	MySQL get should return successfully even if the item doesn't exist
 func TestMysql_Get_ItemDoesntExist_Successful(t *testing.T) {
 
 	//	Arrange
@@ -51,5 +51,32 @@ func TestMysql_Get_ItemDoesntExist_Successful(t *testing.T) {
 
 	if query.Value != response.Value && response.Value != "" {
 		t.Errorf("Get failed: MySQL shouldn't have returned the value %s", response.Value)
+	}
+}
+
+//	MySQL set should work
+func TestMysql_Set_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+
+	//	Need to reset database each time -- using TRUNCATE?
+	//	https://dev.mysql.com/doc/refman/5.0/en/truncate-table.html
+
+	//	Try storing some config items:
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	//	Act
+	response, err := db.Set(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Set failed: MySQL should have set an item without error: %s", err)
+	}
+
+	if ct1.Id == response.Id {
+		t.Error("Set failed: MySQL should have set an item with the correct id")
 	}
 }
