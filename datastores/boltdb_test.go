@@ -56,11 +56,11 @@ func TestBoltDB_Get_ItemDoesntExist_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Get failed: BoltDB should have returned an empty dataset without error: %s", err)
+		t.Errorf("Get failed: Should have returned an empty dataset without error: %s", err)
 	}
 
 	if query.Value != response.Value && response.Value != "" {
-		t.Errorf("Get failed: BoltDB shouldn't have returned the value %s", response.Value)
+		t.Errorf("Get failed: Shouldn't have returned the value %s", response.Value)
 	}
 }
 
@@ -84,11 +84,11 @@ func TestBoltDB_Set_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Set failed: BoltDB should have set an item without error: %s", err)
+		t.Errorf("Set failed: Should have set an item without error: %s", err)
 	}
 
 	if ct1.Id == response.Id {
-		t.Error("Set failed: BoltDB should have set an item with the correct id")
+		t.Error("Set failed: Should have set an item with the correct id")
 	}
 }
 
@@ -122,11 +122,11 @@ func TestBoltDB_Set_ThenGet_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Get failed: BoltDB should have returned a config item without error: %s", err)
+		t.Errorf("Get failed: Should have returned a config item without error: %s", err)
 	}
 
 	if response.Value != ct2.Value {
-		t.Errorf("Get failed: BoltDB should have returned the value %s but returned %s instead", ct2.Value, response.Value)
+		t.Errorf("Get failed: Should have returned the value %s but returned %s instead", ct2.Value, response.Value)
 	}
 }
 
@@ -172,15 +172,15 @@ func TestBoltDB_Set_ThenGet_Global_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil || err2 != nil {
-		t.Errorf("Get failed: BoltDB should have returned a config item without error: %s", err)
+		t.Errorf("Get failed: Should have returned a config item without error: %s", err)
 	}
 
 	if response.Value != ct3.Value {
-		t.Errorf("Get (global) failed: BoltDB should have returned the value %s but returned %s instead", ct3.Value, response.Value)
+		t.Errorf("Get (global) failed: Should have returned the value %s but returned %s instead", ct3.Value, response.Value)
 	}
 
 	if response2.Value != ct2.Value {
-		t.Errorf("Get failed: BoltDB should have returned the value %s but returned %s instead", ct2.Value, response2.Value)
+		t.Errorf("Get failed: Should have returned the value %s but returned %s instead", ct2.Value, response2.Value)
 	}
 }
 
@@ -228,15 +228,15 @@ func TestBoltDB_Set_ThenGet_WithMachine_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil || err2 != nil {
-		t.Errorf("Get failed: BoltDB should have returned a config item without error: %s", err)
+		t.Errorf("Get failed: Should have returned a config item without error: %s", err)
 	}
 
 	if response.Value != ct_nomachine.Value || response.Machine != ct_nomachine.Machine {
-		t.Errorf("Get (not machine specific) failed: BoltDB should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_nomachine.Value, ct_nomachine.Machine, response.Value, response.Machine)
+		t.Errorf("Get (not machine specific) failed: Should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_nomachine.Value, ct_nomachine.Machine, response.Value, response.Machine)
 	}
 
 	if response2.Value != ct_withmachine.Value || response2.Machine != ct_withmachine.Machine {
-		t.Errorf("Get (machine specific) failed: BoltDB should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_withmachine.Value, ct_withmachine.Machine, response2.Value, response2.Machine)
+		t.Errorf("Get (machine specific) failed: Should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_withmachine.Value, ct_withmachine.Machine, response2.Value, response2.Machine)
 	}
 }
 
@@ -269,11 +269,11 @@ func TestBoltDB_GetAllForApplication_NoMachine_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("GetAllForApplication failed: BoltDB should have returned all config items without error: %s", err)
+		t.Errorf("GetAllForApplication failed: Should have returned all config items without error: %s", err)
 	}
 
 	if len(response) != 2 {
-		t.Error("GetAllForApplication failed: BoltDB should have returned 2 items")
+		t.Error("GetAllForApplication failed: Should have returned 2 items")
 	}
 }
 
@@ -313,11 +313,11 @@ func TestBoltDB_GetAllForApplication_WithMachine_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("GetAllForApplication failed: BoltDB should have returned all config items without error: %s", err)
+		t.Errorf("GetAllForApplication failed: Should have returned all config items without error: %s", err)
 	}
 
 	if len(response) != 3 {
-		t.Error("GetAllForApplication failed: BoltDB should have returned 3 items")
+		t.Error("GetAllForApplication failed: Should have returned 3 items")
 	}
 }
 
@@ -359,11 +359,11 @@ func TestBoltDB_GetAll_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("GetAll failed: BoltDB should have returned all config items without error: %s", err)
+		t.Errorf("GetAll failed: Should have returned all config items without error: %s", err)
 	}
 
 	if len(response) != 4 {
-		t.Error("GetAll failed: BoltDB should have returned 4 items")
+		t.Error("GetAll failed: Should have returned 4 items")
 	}
 }
 
@@ -380,11 +380,11 @@ func TestBoltDB_GetAll_NoInitialData_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("GetAll (no initial data) failed: BoltDB should have returned all config items without error: %s", err)
+		t.Errorf("GetAll (no initial data) failed: Should have returned all config items without error: %s", err)
 	}
 
 	if len(response) != 0 {
-		t.Error("GetAll (no initial data) failed: BoltDB should have returned 0 items")
+		t.Error("GetAll (no initial data) failed: Should have returned 0 items")
 	}
 }
 
@@ -426,11 +426,11 @@ func TestBoltDB_GetAllApplications_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("GetAllApplications failed: BoltDB should have returned all applications without error: %s", err)
+		t.Errorf("GetAllApplications failed: Should have returned all applications without error: %s", err)
 	}
 
 	if len(response) != 3 {
-		t.Error("GetAllApplications failed: BoltDB should have returned the correct number of applications")
+		t.Error("GetAllApplications failed: Should have returned the correct number of applications")
 	}
 }
 
@@ -448,11 +448,11 @@ func TestBoltDB_GetAllApplications_NoData_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("GetAllApplications failed: BoltDB should have returned all applications without error: %s", err)
+		t.Errorf("GetAllApplications failed: Should have returned all applications without error: %s", err)
 	}
 
 	if len(response) != 0 {
-		t.Error("GetAllApplications failed: BoltDB should have returned the correct number of applications")
+		t.Error("GetAllApplications failed: Should have returned the correct number of applications")
 	}
 }
 
@@ -475,7 +475,7 @@ func TestBoltDB_Remove_ItemDoesntExist_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Remove failed: BoltDB should have attempted to remove a non-existant item without error: %s", err)
+		t.Errorf("Remove failed: Should have attempted to remove a non-existant item without error: %s", err)
 	}
 }
 
@@ -499,7 +499,7 @@ func TestBoltDB_Remove_NoMachine_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Remove failed: BoltDB should have removed an item without error: %s", err)
+		t.Errorf("Remove failed: Should have removed an item without error: %s", err)
 	}
 }
 
@@ -524,6 +524,6 @@ func TestBoltDB_Remove_WithMachine_Successful(t *testing.T) {
 
 	//	Assert
 	if err != nil {
-		t.Errorf("Remove failed: BoltDB should have removed an item without error: %s", err)
+		t.Errorf("Remove failed: Should have removed an item without error: %s", err)
 	}
 }
