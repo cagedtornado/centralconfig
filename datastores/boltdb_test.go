@@ -434,7 +434,7 @@ func TestBoltDB_GetAllApplications_Successful(t *testing.T) {
 	}
 }
 
-//	Bolt getall should work
+//	Bolt GetAllApplications should work, even with no data
 func TestBoltDB_GetAllApplications_NoData_Successful(t *testing.T) {
 	//	Arrange
 	filename := "testing.db"

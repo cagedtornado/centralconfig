@@ -178,8 +178,86 @@ func (store MySqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 }
 
 func (store MySqlDB) GetAllForApplication(application string) ([]ConfigItem, error) {
-	//	Our return items:
+	//	Our return item:
 	retval := []ConfigItem{}
+
+	//	Open the database:
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?parseTime=true", store.User, store.Password, store.Protocol, store.Address, store.Database))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Prepare our query
+	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=?")
+	defer stmt.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get all global config items
+	rows, err := stmt.Query("*")
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated})
+	}
+
+	//	Get config items for the given application:
+	rows, err = stmt.Query(application)
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated})
+	}
 
 	return retval, nil
 }
@@ -188,12 +266,79 @@ func (store MySqlDB) GetAll() ([]ConfigItem, error) {
 	//	Our return items:
 	retval := []ConfigItem{}
 
+	//	Open the database:
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?parseTime=true", store.User, store.Password, store.Protocol, store.Address, store.Database))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get all config items
+	rows, err := db.Query("select id, application, name, value, machine, updated from configitem")
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated})
+	}
+
 	return retval, nil
 }
 
 func (store MySqlDB) GetAllApplications() ([]string, error) {
 	//	Our return items:
 	var retval []string
+
+	//	Open the database:
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?parseTime=true", store.User, store.Password, store.Protocol, store.Address, store.Database))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get all applications
+	rows, err := db.Query("select distinct application from configitem")
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var application string
+
+		//	Scan the row into our variables
+		err = rows.Scan(&application)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, application)
+	}
 
 	return retval, nil
 }

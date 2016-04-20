@@ -233,3 +233,201 @@ func TestMysql_Set_ThenGet_WithMachine_Successful(t *testing.T) {
 		t.Errorf("Get (machine specific) failed: Should have returned the value %s (for machine %s) but returned %s (for machine %s) instead", ct_withmachine.Value, ct_withmachine.Machine, response2.Value, response2.Machine)
 	}
 }
+
+//	MySQL GetAllForApplication should work
+func TestMysql_GetAllForApplication_NoMachine_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	response, err := db.GetAllForApplication(query.Application)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAllForApplication failed: Should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 2 {
+		t.Error("GetAllForApplication failed: Should have returned 2 items")
+	}
+}
+
+//	Mysql GetAllForApplication should work - even when some items have a specified machine
+func TestMysql_GetAllForApplication_WithMachine_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Machine:     "APPBOX1",
+		Value:       "Value2"}
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	response, err := db.GetAllForApplication(query.Application)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAllForApplication failed: Should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 3 {
+		t.Error("GetAllForApplication failed: Should have returned 3 items")
+	}
+}
+
+//	MySQL getall should work
+func TestMysql_GetAll_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "OtherTestApp",
+		Name:        "TestItem3",
+		Value:       "Value2"}
+
+	ct4 := &datastores.ConfigItem{
+		Application: "*",
+		Name:        "TestItem4",
+		Value:       "Value2"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	db.Set(ct4)
+	response, err := db.GetAll()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAll failed: Should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 4 {
+		t.Error("GetAll failed: Should have returned 4 items")
+	}
+}
+
+//	MySQL getall should work - even with no initial data
+func TestMysql_GetAll_NoInitialData_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	response, err := db.GetAll()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAll (no initial data) failed: Should have returned all config items without error: %s", err)
+	}
+
+	if len(response) != 0 {
+		t.Error("GetAll (no initial data) failed: Should have returned 0 items")
+	}
+}
+
+//	MySQL GetAllApplications should work
+func TestMysql_GetAllApplications_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2",
+		Value:       "Value2"}
+
+	ct3 := &datastores.ConfigItem{
+		Application: "OtherTestApp",
+		Name:        "TestItem3",
+		Value:       "Value2"}
+
+	ct4 := &datastores.ConfigItem{
+		Application: "*",
+		Name:        "TestItem4",
+		Value:       "Value2"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	db.Set(ct3)
+	db.Set(ct4)
+	response, err := db.GetAllApplications()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAllApplications failed: Should have returned all applications without error: %s", err)
+	}
+
+	if len(response) != 3 {
+		t.Error("GetAllApplications failed: Should have returned the correct number of applications")
+	}
+}
+
+//	MySQL GetAllApplications should work, even with no data
+func TestMysql_GetAllApplications_NoData_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	//	Act
+	response, err := db.GetAllApplications()
+
+	//	Assert
+	if err != nil {
+		t.Errorf("GetAllApplications failed: Should have returned all applications without error: %s", err)
+	}
+
+	if len(response) != 0 {
+		t.Error("GetAllApplications failed: Should have returned the correct number of applications")
+	}
+}
