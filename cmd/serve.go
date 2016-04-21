@@ -56,7 +56,7 @@ func serve(cmd *cobra.Command, args []string) {
 	}
 
 	//	Get configuration information
-	log.Printf("[INFO] Using BoltDB database: %s", viper.GetString("boltdb.database"))
+	log.Printf("[INFO] Using BoltDB database: %s", viper.GetString("datastore.boltdb.database"))
 
 	//	Create a router and setup our REST endpoints...
 	var Router = mux.NewRouter()

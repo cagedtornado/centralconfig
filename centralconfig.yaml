@@ -1,5 +1,6 @@
 
-http:
+http: 
   port: 3000
-boltdb:
-  database: config.db
+datastore:
+  boltdb:
+    database: config.db

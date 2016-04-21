@@ -58,6 +58,6 @@ func GetConfigDatastore() ConfigService {
 
 	//	For now, just always return the BoltDB provider
 	return BoltDB{
-		Database: viper.GetString("boltdb.database")}
+		Database: viper.GetString("datastore.boltdb.database")}
 
 }

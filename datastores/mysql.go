@@ -420,3 +420,7 @@ func (store MySqlDB) Remove(configItem *ConfigItem) error {
 
 	return nil
 }
+
+func GetMysqlCreateDDL() []byte {
+	return dbCreate
+}
