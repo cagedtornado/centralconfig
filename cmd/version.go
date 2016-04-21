@@ -30,7 +30,7 @@ var versionCmd = &cobra.Command{
 	Long:  `Shows version information and exits`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//	Show the version number
-		fmt.Printf("Centralconfig version %s", buildVersion)
+		fmt.Printf("\nCentralconfig version %s\n\n", buildVersion)
 
 		//	Show the commitid if available:
 		if commitId != "" {
