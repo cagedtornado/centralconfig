@@ -431,3 +431,66 @@ func TestMysql_GetAllApplications_NoData_Successful(t *testing.T) {
 		t.Error("GetAllApplications failed: Should have returned the correct number of applications")
 	}
 }
+
+//	MySQL remove should work - even with a non-existant item
+func TestMysql_Remove_ItemDoesntExist_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	//	Act
+	err := db.Remove(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Remove failed: Should have attempted to remove a non-existant item without error: %s", err)
+	}
+}
+
+//	MySQL remove should work
+func TestMysql_Remove_NoMachine_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	//	Act
+	db.Set(ct1)
+	err := db.Remove(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Remove failed: Should have removed an item without error: %s", err)
+	}
+}
+
+//	MySQL remove should work, even with machine specified
+func TestMysql_Remove_WithMachine_Successful(t *testing.T) {
+	//	Arrange
+	db := getDBConnection()
+	resetTestDB(db)
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Machine:     "APPBOX1",
+		Value:       "Value1"}
+
+	//	Act
+	db.Set(ct1)
+	err := db.Remove(ct1)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Remove failed: Should have removed an item without error: %s", err)
+	}
+}

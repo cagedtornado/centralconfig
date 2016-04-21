@@ -406,5 +406,17 @@ func (store MySqlDB) Set(configItem *ConfigItem) (ConfigItem, error) {
 }
 
 func (store MySqlDB) Remove(configItem *ConfigItem) error {
+	//	Open the database:
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?parseTime=true", store.User, store.Password, store.Protocol, store.Address, store.Database))
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("delete from configitem where application=? and name=? and machine=?", configItem.Application, configItem.Name, configItem.Machine)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
