@@ -1,12 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/danesparza/centralconfig/api"
+	"github.com/danesparza/centralconfig/datastores"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -30,33 +29,13 @@ var serveCmd = &cobra.Command{
 
 func serve(cmd *cobra.Command, args []string) {
 
-	if ProblemWithConfigFile == true {
-		fmt.Println(`
-	There was a problem reading the server configuration file.  
-	
-	If you need help creating a configuration file, you can use 
-	the 'defaults' command to generate a new server configuration file.  
-	Use "centralconfig defaults --help" if you need help.
-
-	=== Quick start === 
-	To generate a server configuration file, run the following command: 
-	
-	centralconfig defaults > centralconfig.yaml
-			`)
-
-		//	We really shouldn't proceed.
-		//	Use non-zero status to indicate failure.
-		//	from https://golang.org/pkg/os/#Exit
-		os.Exit(1)
-	}
-
 	//	If we have a config file, report it:
 	if viper.ConfigFileUsed() != "" {
 		log.Println("[INFO] Using config file:", viper.ConfigFileUsed())
 	}
 
-	//	Get configuration information
-	log.Printf("[INFO] Using BoltDB database: %s", viper.GetString("datastore.boltdb.database"))
+	//	Log the datastore information we have:
+	logDatastoreInfo()
 
 	//	Create a router and setup our REST endpoints...
 	var Router = mux.NewRouter()
@@ -105,4 +84,20 @@ func init() {
 	viper.BindPFlag("http.port", serveCmd.Flags().Lookup("port"))
 	viper.BindPFlag("http.bind", serveCmd.Flags().Lookup("bind"))
 	viper.BindPFlag("http.ui-dir", serveCmd.Flags().Lookup("ui-dir"))
+}
+
+func logDatastoreInfo() {
+	//	Get configuration information
+	ds := datastores.GetConfigDatastore()
+
+	switch t := ds.(type) {
+	case datastores.MySqlDB:
+		log.Printf("[INFO] Using MySQL server: %s", ds.(datastores.MySqlDB).Address)
+		log.Printf("[INFO] Using MySQL database: %s", ds.(datastores.MySqlDB).Database)
+	case datastores.BoltDB:
+		log.Printf("[INFO] Using BoltDB database: %s", ds.(datastores.BoltDB).Database)
+	default:
+		_ = t
+		log.Println("[ERROR] Can't determine datastore type")
+	}
 }

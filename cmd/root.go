@@ -43,6 +43,11 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	}
 
+	//	Set our defaults
+	viper.SetDefault("http.port", "3000")
+	viper.SetDefault("http.bind", "127.0.0.1")
+	viper.SetDefault("datastore.boltdb.database", "config.db")
+
 	viper.SetConfigName("centralconfig") // name of config file (without extension)
 	viper.AddConfigPath("$HOME")         // adding home directory as first search path
 	viper.AddConfigPath(".")             // also look in the working directory

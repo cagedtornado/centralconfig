@@ -1,9 +1,8 @@
 package datastores
 
 import (
-	"time"
-
 	"github.com/spf13/viper"
+	"time"
 )
 
 //	ConfigItem represents a configuration item
@@ -55,8 +54,20 @@ func GetConfigDatastore() ConfigService {
 
 	//	Get configuration information and return the appropriate
 	//	provider based on what is configured
+	if viper.InConfig("datastore") {
+		dsConfig := viper.Sub("datastore")
 
-	//	For now, just always return the BoltDB provider
+		//	If we have MySQL, use that:
+		if dsConfig.InConfig("mysql") {
+			return MySqlDB{
+				Database: dsConfig.GetString("mysql.database"),
+				Address:  dsConfig.GetString("mysql.address"),
+				User:     dsConfig.GetString("mysql.user"),
+				Password: dsConfig.GetString("mysql.password")}
+		}
+	}
+
+	//	Last resort: use BoltDB
 	return BoltDB{
 		Database: viper.GetString("datastore.boltdb.database")}
 
