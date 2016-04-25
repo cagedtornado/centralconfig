@@ -11,6 +11,7 @@ var (
 	jsonConfig bool
 	yamlConfig bool
 	mysqlDDL   bool
+	mssqlDDL   bool
 )
 
 var yamlDefault = []byte(`
@@ -53,7 +54,10 @@ centralconfig defaults --mysql > centralconfigdb.sql
 			fmt.Printf("%s", jsonDefault)
 		} else if mysqlDDL {
 			fmt.Printf("%s", datastores.GetMysqlCreateDDL())
-		} else if yamlConfig {
+		} else if mssqlDDL {
+			fmt.Printf("%s", datastores.GetMSsqlCreateDDL())
+		}
+		else if yamlConfig {
 			fmt.Printf("%s", yamlDefault)
 		}
 	},
@@ -65,5 +69,6 @@ func init() {
 	defaultsCmd.Flags().BoolVarP(&jsonConfig, "json", "j", false, "Create a JSON configuration file")
 	defaultsCmd.Flags().BoolVarP(&yamlConfig, "yaml", "y", true, "Create a YAML configuration file")
 	defaultsCmd.Flags().BoolVarP(&mysqlDDL, "mysql", "m", false, "Create a MySQL database script")
+	defaultsCmd.Flags().BoolVarP(&mssqlDDL, "mssql", "s", false, "Create a MSSQL database script")
 
 }
