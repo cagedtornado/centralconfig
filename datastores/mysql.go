@@ -9,7 +9,7 @@ import (
 )
 
 //	Requires at least MySQL 5.6 (for the auto updating datetime)
-var dbCreate = []byte(`
+var dbCreateMySQL = []byte(`
 CREATE TABLE configitem (
   id int(11) NOT NULL AUTO_INCREMENT,
   application varchar(100) NOT NULL DEFAULT '*',
@@ -422,5 +422,5 @@ func (store MySqlDB) Remove(configItem *ConfigItem) error {
 }
 
 func GetMysqlCreateDDL() []byte {
-	return dbCreate
+	return dbCreateMySQL
 }
