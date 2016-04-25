@@ -17,7 +17,7 @@ func getDBConnection() datastores.MySqlDB {
 	//	Set this information from environment variables?
 	return datastores.MySqlDB{
 		Address:  os.Getenv("centralconfig_test_mysql_server"), /* Ex: test-server:3306 If this is blank, it assumes a local database on port 3306 */
-		Database: os.Getenv("centralconfig_test_msyql_database"),
+		Database: os.Getenv("centralconfig_test_mysql_database"),
 		User:     os.Getenv("centralconfig_test_mysql_user"),
 		Password: os.Getenv("centralconfig_test_mysql_password")}
 }
