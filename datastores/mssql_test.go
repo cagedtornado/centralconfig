@@ -50,3 +50,27 @@ func TestMssql_Init_Successful(t *testing.T) {
 		t.Errorf("Init failed: Can't connect to database: %s", err)
 	}
 }
+
+//	MySQL get should return successfully even if the item doesn't exist
+func TestMssql_Get_ItemDoesntExist_Successful(t *testing.T) {
+
+	//	Arrange
+	db := getMSSQLDBConnection()
+	resetMSSQLTestDB(db)
+
+	query := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem2"}
+
+	//	Act
+	response, err := db.Get(query)
+
+	//	Assert
+	if err != nil {
+		t.Errorf("Get failed: Should have returned an empty dataset without error: %s", err)
+	}
+
+	if query.Value != response.Value && response.Value != "" {
+		t.Errorf("Get failed: Shouldn't have returned the value %s", response.Value)
+	}
+}

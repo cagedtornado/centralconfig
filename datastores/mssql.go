@@ -2,6 +2,7 @@ package datastores
 
 import (
 	"fmt"
+	"time"
 
 	"database/sql"
 	_ "github.com/denisenkom/go-mssqldb"
@@ -60,6 +61,133 @@ func (store MSSqlDB) InitStore(overwrite bool) error {
 	}
 
 	return nil
+}
+
+func (store MSSqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
+	//	Our return item:
+	retval := ConfigItem{}
+
+	//	Open the database:
+	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Prepare our query
+	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=? and name=? and machine=?")
+	defer stmt.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get the application/name/machine combo
+	rows, err := stmt.Query(configItem.Application, configItem.Name, configItem.Machine)
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Set our return value
+		retval = ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated}
+
+		break
+	}
+
+	//	If we haven't found it, get the application/name combo with a blank machine name
+	if retval.Id == 0 {
+		rows, err = stmt.Query(configItem.Application, configItem.Name, "")
+		defer rows.Close()
+		if err != nil {
+			return retval, err
+		}
+
+		for rows.Next() {
+			var id int64
+			var application string
+			var name string
+			var value string
+			var machine string
+			var updated time.Time
+
+			//	Scan the row into our variables
+			err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+			if err != nil {
+				return retval, err
+			}
+
+			//	Set our return value
+			retval = ConfigItem{
+				Id:          id,
+				Application: application,
+				Name:        name,
+				Value:       value,
+				Machine:     machine,
+				LastUpdated: updated}
+
+			break
+		}
+	}
+
+	//	If we still haven't found it, get the default application/name and blank machine name
+	if retval.Id == 0 {
+		rows, err = stmt.Query("*", configItem.Name, "")
+		defer rows.Close()
+		if err != nil {
+			return retval, err
+		}
+
+		for rows.Next() {
+			var id int64
+			var application string
+			var name string
+			var value string
+			var machine string
+			var updated time.Time
+
+			//	Scan the row into our variables
+			err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+			if err != nil {
+				return retval, err
+			}
+
+			//	Set our return value
+			retval = ConfigItem{
+				Id:          id,
+				Application: application,
+				Name:        name,
+				Value:       value,
+				Machine:     machine,
+				LastUpdated: updated}
+
+			break
+		}
+	}
+
+	return retval, nil
 }
 
 func GetMSsqlCreateDDL() []byte {
