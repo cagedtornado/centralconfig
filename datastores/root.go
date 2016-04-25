@@ -57,6 +57,15 @@ func GetConfigDatastore() ConfigService {
 	if viper.InConfig("datastore") {
 		dsConfig := viper.Sub("datastore")
 
+		//	If we have MSSQL, use that:
+		if dsConfig.InConfig("mssql") {
+			return MSSqlDB{
+				Database: dsConfig.GetString("mssql.database"),
+				Address:  dsConfig.GetString("mssql.address"),
+				User:     dsConfig.GetString("mssql.user"),
+				Password: dsConfig.GetString("mssql.password")}
+		}
+
 		//	If we have MySQL, use that:
 		if dsConfig.InConfig("mysql") {
 			return MySqlDB{
