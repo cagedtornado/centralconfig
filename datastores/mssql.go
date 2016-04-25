@@ -190,6 +190,250 @@ func (store MSSqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
 	return retval, nil
 }
 
+func (store MSSqlDB) GetAllForApplication(application string) ([]ConfigItem, error) {
+	//	Our return item:
+	retval := []ConfigItem{}
+
+	//	Open the database:
+	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Prepare our query
+	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=?")
+	defer stmt.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get all global config items
+	rows, err := stmt.Query("*")
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated})
+	}
+
+	//	Get config items for the given application:
+	rows, err = stmt.Query(application)
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated})
+	}
+
+	return retval, nil
+}
+
+func (store MSSqlDB) GetAll() ([]ConfigItem, error) {
+	//	Our return items:
+	retval := []ConfigItem{}
+
+	//	Open the database:
+	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get all config items
+	rows, err := db.Query("select id, application, name, value, machine, updated from configitem")
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var id int64
+		var application string
+		var name string
+		var value string
+		var machine string
+		var updated time.Time
+
+		//	Scan the row into our variables
+		err = rows.Scan(&id, &application, &name, &value, &machine, &updated)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, ConfigItem{
+			Id:          id,
+			Application: application,
+			Name:        name,
+			Value:       value,
+			Machine:     machine,
+			LastUpdated: updated})
+	}
+
+	return retval, nil
+}
+
+func (store MSSqlDB) GetAllApplications() ([]string, error) {
+	//	Our return items:
+	var retval []string
+
+	//	Open the database:
+	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	//	Get all applications
+	rows, err := db.Query("select distinct application from configitem")
+	defer rows.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	for rows.Next() {
+		var application string
+
+		//	Scan the row into our variables
+		err = rows.Scan(&application)
+
+		if err != nil {
+			return retval, err
+		}
+
+		//	Append to return values
+		retval = append(retval, application)
+	}
+
+	return retval, nil
+}
+
+func (store MSSqlDB) Set(configItem *ConfigItem) (ConfigItem, error) {
+	//	Our return item:
+	retval := ConfigItem{}
+
+	//	Open the database:
+	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
+	defer db.Close()
+	if err != nil {
+		return retval, err
+	}
+
+	if configItem.Id == 0 {
+		//	If we have a brand new item, insert it
+		stmt, err := db.Prepare("insert into configitem(application, name, value, machine) values(?, ?, ?, ?)")
+		defer stmt.Close()
+		if err != nil {
+			return retval, err
+		}
+
+		res, err := stmt.Exec(configItem.Application, configItem.Name, configItem.Value, configItem.Machine)
+		if err != nil {
+			return retval, err
+		}
+
+		lastId, err := res.LastInsertId()
+		if err != nil {
+			return retval, err
+		}
+
+		retval = ConfigItem{
+			Id:          lastId,
+			Application: configItem.Application,
+			Name:        configItem.Name,
+			Value:       configItem.Value,
+			Machine:     configItem.Machine,
+			LastUpdated: time.Now()}
+
+	} else {
+		//	If we have an existing id, just update the old item
+		stmt, err := db.Prepare("update configitem set application=?, name=?, value=?, machine=? where id=?")
+		defer stmt.Close()
+		if err != nil {
+			return retval, err
+		}
+
+		_, err = stmt.Exec(configItem.Application, configItem.Name, configItem.Value, configItem.Machine, configItem.Id)
+		if err != nil {
+			return retval, err
+		}
+
+		retval = ConfigItem{
+			Id:          configItem.Id,
+			Application: configItem.Application,
+			Name:        configItem.Name,
+			Value:       configItem.Value,
+			Machine:     configItem.Machine,
+			LastUpdated: time.Now()}
+	}
+
+	return retval, nil
+}
+
+func (store MSSqlDB) Remove(configItem *ConfigItem) error {
+	//	Open the database:
+	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("delete from configitem where application=? and name=? and machine=?", configItem.Application, configItem.Name, configItem.Machine)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetMSsqlCreateDDL() []byte {
 	return dbCreateMSSQL
 }
