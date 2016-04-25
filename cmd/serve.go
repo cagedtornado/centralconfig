@@ -94,6 +94,9 @@ func logDatastoreInfo() {
 	case datastores.MySqlDB:
 		log.Printf("[INFO] Using MySQL server: %s", ds.(datastores.MySqlDB).Address)
 		log.Printf("[INFO] Using MySQL database: %s", ds.(datastores.MySqlDB).Database)
+	case datastores.MSSqlDB:
+		log.Printf("[INFO] Using MSSQL server: %s", ds.(datastores.MSSqlDB).Address)
+		log.Printf("[INFO] Using MSSQL database: %s", ds.(datastores.MSSqlDB).Database)
 	case datastores.BoltDB:
 		log.Printf("[INFO] Using BoltDB database: %s", ds.(datastores.BoltDB).Database)
 	default:
