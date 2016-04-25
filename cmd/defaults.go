@@ -56,8 +56,7 @@ centralconfig defaults --mysql > centralconfigdb.sql
 			fmt.Printf("%s", datastores.GetMysqlCreateDDL())
 		} else if mssqlDDL {
 			fmt.Printf("%s", datastores.GetMSsqlCreateDDL())
-		}
-		else if yamlConfig {
+		} else if yamlConfig {
 			fmt.Printf("%s", yamlDefault)
 		}
 	},
