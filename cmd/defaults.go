@@ -15,7 +15,7 @@ var (
 )
 
 var yamlDefault = []byte(`
-http:
+server:
   port: 3000
 datastore:
   boltdb:
@@ -23,7 +23,7 @@ datastore:
 `)
 
 var jsonDefault = []byte(`{
-  "http" : {
+  "server" : {
     "port": "3000"
   },
   "datastore" : {

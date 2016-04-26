@@ -44,8 +44,8 @@ func initConfig() {
 	}
 
 	//	Set our defaults
-	viper.SetDefault("http.port", "3000")
-	viper.SetDefault("http.bind", "127.0.0.1")
+	viper.SetDefault("server.port", "3000")
+	viper.SetDefault("server.bind", "")
 	viper.SetDefault("datastore.boltdb.database", "config.db")
 
 	viper.SetConfigName("centralconfig") // name of config file (without extension)

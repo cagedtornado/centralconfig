@@ -51,7 +51,7 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/applications/getall", api.GetAllApplications)
 
 	//	If we don't have a UI directory specified...
-	if viper.GetString("http.ui-dir") == "" {
+	if viper.GetString("server.ui-dir") == "" {
 		//	Use the static assets file generated with
 		//	https://github.com/elazarl/go-bindata-assetfs using the centralconfig-ui from
 		//	https://github.com/danesparza/centralconfig-ui.
@@ -64,12 +64,27 @@ func serve(cmd *cobra.Command, args []string) {
 		Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(assetFS())))
 	} else {
 		//	Use the supplied directory:
-		log.Printf("[INFO] Using UI directory: %s", viper.GetString("http.ui-dir"))
-		Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(viper.GetString("http.ui-dir")))))
+		log.Printf("[INFO] Using UI directory: %s", viper.GetString("server.ui-dir"))
+		Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(viper.GetString("server.ui-dir")))))
 	}
 
-	log.Printf("[INFO] Starting HTTP server: %s:%s", viper.GetString("http.bind"), viper.GetString("http.port"))
-	http.ListenAndServe(viper.GetString("http.bind")+":"+viper.GetString("http.port"), Router)
+	//	Format the bound interface:
+	formattedInterface := viper.GetString("server.bind")
+	if formattedInterface == "" {
+		formattedInterface = "127.0.0.1"
+	}
+
+	//	If we have an SSL cert specified, use it:
+	if viper.GetString("server.sslcert") != "" {
+		log.Printf("[INFO] Using SSL cert: %s", viper.GetString("server.sslcert"))
+		log.Printf("[INFO] Using SSL key: %s", viper.GetString("server.sslkey"))
+		log.Printf("[INFO] Starting HTTPS server: https://%s:%s", formattedInterface, viper.GetString("server.port"))
+
+		http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), Router)
+	} else {
+		log.Printf("[INFO] Starting HTTP server: http://%s:%s", formattedInterface, viper.GetString("server.port"))
+		http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), Router)
+	}
 }
 
 func init() {
@@ -77,13 +92,13 @@ func init() {
 
 	//	Setup our flags
 	serveCmd.Flags().IntVarP(&serverPort, "port", "p", 1313, "port on which the server will listen")
-	serveCmd.Flags().StringVarP(&serverInterface, "bind", "i", "127.0.0.1", "interface to which the server will bind")
+	serveCmd.Flags().StringVarP(&serverInterface, "bind", "i", "", "interface to which the server will bind")
 	serveCmd.Flags().StringVarP(&serverUIDirectory, "ui-dir", "u", "", "directory for the UI")
 
 	//	Bind config flags for optional config file override:
-	viper.BindPFlag("http.port", serveCmd.Flags().Lookup("port"))
-	viper.BindPFlag("http.bind", serveCmd.Flags().Lookup("bind"))
-	viper.BindPFlag("http.ui-dir", serveCmd.Flags().Lookup("ui-dir"))
+	viper.BindPFlag("server.port", serveCmd.Flags().Lookup("port"))
+	viper.BindPFlag("server.bind", serveCmd.Flags().Lookup("bind"))
+	viper.BindPFlag("server.ui-dir", serveCmd.Flags().Lookup("ui-dir"))
 }
 
 func logDatastoreInfo() {
