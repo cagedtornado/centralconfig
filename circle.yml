@@ -1,8 +1,8 @@
 machine:
   environment:
-    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"    
+    PACKAGE_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"    
     GOPATH: "$HOME/.go_workspace"
-    PROJECT_DIR: "$GOPATH/src/$IMPORT_PATH"
+    PROJECT_DIR: "$GOPATH/src/$PACKAGE_PATH"
 checkout:
   post:
     - git clone https://github.com/danesparza/centralconfig-ui.git
@@ -21,7 +21,7 @@ dependencies:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
   post: 
-    - go install $PROJECT_DIR/...
+    - go install $PACKAGE_PATH/...
     - centralconfig defaults --mysql
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
@@ -35,15 +35,15 @@ database:
     - mysql circle_test < mysql.sql
 test:
   pre:
-    - go vet -x $IMPORT_PATH/...    
+    - go vet -x $PACKAGE_PATH/...    
     - mkdir $CIRCLE_TEST_REPORTS/junit
   override:
-    - go test -v -race $IMPORT_PATH/...
+    - go test -v -race $PACKAGE_PATH/...
   post:    
-    - go test -v -race $IMPORT_PATH/... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
+    - go test -v -race $PACKAGE_PATH/... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
 deployment:
   release:
     branch: master
     commands:  
-    - gox -ldflags "-X github.com/danesparza/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/danesparza/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $IMPORT_PATH/...   
+    - gox -ldflags "-X github.com/danesparza/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/danesparza/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...   
     - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/ || true
