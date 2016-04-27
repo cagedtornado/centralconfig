@@ -3,7 +3,7 @@
 API path              | Description
 ----------            | -----------
 /                     | Redirects to the /UI path (and the web based user interface)
-/config/get           | Gets a single configuration item
+[/config/get](https://github.com/danesparza/centralconfig/tree/master/api#configget)           | Gets a single configuration item
 /config/set           | Sets (creates or updates) a configuration item
 /config/remove        | Removes a configuration item
 /config/getall        | Gets all configuration items
