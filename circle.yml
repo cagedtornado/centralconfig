@@ -22,7 +22,7 @@ dependencies:
     - go get -t -d -v ./...
   post: 
     - go install $PACKAGE_PATH/...
-    - centralconfig defaults --mysql
+    - centralconfig defaults --mysql > mysql.sql
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
     - cd centralconfig-ui; git describe --tags; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp index.html /tmp/ui
