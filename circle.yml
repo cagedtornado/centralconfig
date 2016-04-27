@@ -21,13 +21,14 @@ dependencies:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...
   post: 
+    - go install $PROJECT_DIR/...
+    - centralconfig defaults --mysql
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
     - cd centralconfig-ui; git describe --tags; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp index.html /tmp/ui
     - cp -r /tmp/ui $PROJECT_DIR
     - ls -l $PROJECT_DIR
     - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd 
-    - centralconfig defaults --mysql
 database:
   override:
     - mysql -V
