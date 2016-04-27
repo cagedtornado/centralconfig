@@ -27,6 +27,7 @@ dependencies:
     - cp -r /tmp/ui $PROJECT_DIR
     - ls -l $PROJECT_DIR
     - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd 
+    - centralconfig defaults --mysql
 database:
   override:
     - mysql -V
