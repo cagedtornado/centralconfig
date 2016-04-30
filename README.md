@@ -1,5 +1,5 @@
 # centralconfig [![Circle CI](https://circleci.com/gh/danesparza/centralconfig.svg?style=svg)](https://circleci.com/gh/danesparza/centralconfig)
-A simple REST based service for managing application configuration using a SQL back-end.  Runs on Linux/Windows/OSX/FreeBSD/Raspberry Pi.
+A simple REST based service for managing application configuration across a cluster using a SQL back-end.  Runs on Linux/Windows/OSX/FreeBSD/Raspberry Pi.
 
 Back-ends supported:
 - [BoltDB](https://github.com/boltdb/bolt) (default)
