@@ -15,7 +15,7 @@ machine:
 checkout:
   post:
     # Get our UI source
-    - git clone https://github.com/danesparza/centralconfig-ui.git
+    - git clone https://github.com/$CIRCLE_PROJECT_USERNAME/centralconfig-ui.git
 dependencies:
   pre:    
     # Sanity check that our go version is installed
@@ -74,7 +74,7 @@ deployment:
     branch: master
     commands:
     # Multi-platform compile with version information  
-    - gox -ldflags "-X github.com/danesparza/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/danesparza/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...   
+    - gox -ldflags "-X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...   
     # Publish assets to Github
     - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/ || true
     # Push to docker
