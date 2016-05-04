@@ -9,7 +9,7 @@ import (
 	"database/sql"
 	_ "github.com/denisenkom/go-mssqldb"
 
-	"github.com/danesparza/centralconfig/datastores"
+	"github.com/cagedtornado/centralconfig/datastores"
 )
 
 //	Gets the database connection information from the environment

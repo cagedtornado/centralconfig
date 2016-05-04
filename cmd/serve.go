@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/danesparza/centralconfig/api"
-	"github.com/danesparza/centralconfig/datastores"
+	"github.com/cagedtornado/centralconfig/api"
+	"github.com/cagedtornado/centralconfig/datastores"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"

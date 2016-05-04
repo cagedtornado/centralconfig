@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/danesparza/centralconfig/datastores"
+	"github.com/cagedtornado/centralconfig/datastores"
 )
 
 //	Gets the database connection information from the environment

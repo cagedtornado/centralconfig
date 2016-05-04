@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/danesparza/centralconfig/datastores"
+	"github.com/cagedtornado/centralconfig/datastores"
 	"github.com/spf13/cobra"
 )
 

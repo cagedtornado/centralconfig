@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/danesparza/centralconfig/datastores"
+	"github.com/cagedtornado/centralconfig/datastores"
 )
 
 //	Sanity check: The database shouldn't exist yet

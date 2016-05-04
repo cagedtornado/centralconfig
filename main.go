@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/danesparza/centralconfig/cmd"
+	"github.com/cagedtornado/centralconfig/cmd"
 	"github.com/hashicorp/logutils"
 )
 
