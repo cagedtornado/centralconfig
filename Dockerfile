@@ -11,7 +11,10 @@ ADD . /go/src/github.com/cagedtornado/centralconfig
 RUN go get github.com/cagedtornado/centralconfig/...
 
 # Run the app by default when the container starts.
-ENTRYPOINT /go/bin/centralconfig
+ENTRYPOINT ["/go/bin/centralconfig"]
+
+# Start with the 'serve' command
+CMD ["serve"]
 
 # Document that the app listens on port 3000.
 EXPOSE 3000
