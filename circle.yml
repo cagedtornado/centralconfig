@@ -41,10 +41,6 @@ dependencies:
     - env GOOS=windows go get -d -v ./...
     - go get -t -d -v ./...    
   post: 
-    # Install for our platform to be able to generate 
-    # SQL DDL for our integration tests 
-    - go install $PACKAGE_PATH/...
-    - centralconfig defaults --mysql > mysql.sql
     # Setup our UI 
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
@@ -53,6 +49,10 @@ dependencies:
     - ls -l $PROJECT_DIR
     # Compile the UI static assets into a Go sourcefile (to be compiled)
     - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd 
+    # Install for our platform to be able to generate 
+    # SQL DDL for our integration tests 
+    - go install $PACKAGE_PATH/...
+    - centralconfig defaults --mysql > mysql.sql
   cache_directories:
     - ~/download
 database:
