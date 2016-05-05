@@ -80,10 +80,10 @@ func serve(cmd *cobra.Command, args []string) {
 		log.Printf("[INFO] Using SSL key: %s\n", viper.GetString("server.sslkey"))
 		log.Printf("[INFO] Starting HTTPS server: https://%s:%s\n", formattedInterface, viper.GetString("server.port"))
 
-		log.Printf("%v\n", http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), Router))
+		log.Printf("[ERROR] %v\n", http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), Router))
 	} else {
 		log.Printf("[INFO] Starting HTTP server: http://%s:%s\n", formattedInterface, viper.GetString("server.port"))
-		log.Printf("%v\n", http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), Router))
+		log.Printf("[ERROR] %v\n", http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), Router))
 	}
 }
 
