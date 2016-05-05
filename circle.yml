@@ -6,7 +6,7 @@ machine:
     GOPATH: "$HOME/.go_workspace"
     PROJECT_DIR: "$GOPATH/src/$PACKAGE_PATH"
     GODIST: "go1.6.2.linux-amd64.tar.gz"
-    NATIVE_BINARY: "$CIRCLE_ARTIFACTS/$CIRCLE_PROJECT_REPONAME/centralconfig_linux_amd64"
+    NATIVE_BINARY: "$CIRCLE_ARTIFACTS/centralconfig_linux_amd64"
   post:
     # Install the specified version of Go
     - mkdir -p download
@@ -39,8 +39,9 @@ dependencies:
     # is in the correct Go workspace structure
     - mkdir -p "$PROJECT_DIR"
     - rsync -azC --delete ./ --include=".git" "$PROJECT_DIR"
-    - env GOOS=windows go get -d -v ./...
-    - go get -t -d -v ./...    
+    - rm -rf centralconfig
+    - env GOOS=windows go get -d -v $PACKAGE_PATH/...
+    - go get -t -d -v $PACKAGE_PATH/...    
   post: 
     # Setup our UI 
     - mkdir -p /tmp/ui/js
@@ -77,7 +78,7 @@ deployment:
     - gox -ldflags "-X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...   
     # Publish assets to Github
     - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/ || true
-    # Build and tag our docker image    
+    # Build and tag our docker image        
     - cp $NATIVE_BINARY centralconfig
     - docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
     - docker tag $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_BUILD_NUM
