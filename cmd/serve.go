@@ -64,7 +64,7 @@ func serve(cmd *cobra.Command, args []string) {
 		Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(assetFS())))
 	} else {
 		//	Use the supplied directory:
-		log.Printf("[INFO] Using UI directory: %s", viper.GetString("server.ui-dir"))
+		log.Printf("[INFO] Using UI directory: %s\n", viper.GetString("server.ui-dir"))
 		Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(viper.GetString("server.ui-dir")))))
 	}
 
@@ -76,14 +76,14 @@ func serve(cmd *cobra.Command, args []string) {
 
 	//	If we have an SSL cert specified, use it:
 	if viper.GetString("server.sslcert") != "" {
-		log.Printf("[INFO] Using SSL cert: %s", viper.GetString("server.sslcert"))
-		log.Printf("[INFO] Using SSL key: %s", viper.GetString("server.sslkey"))
-		log.Printf("[INFO] Starting HTTPS server: https://%s:%s", formattedInterface, viper.GetString("server.port"))
+		log.Printf("[INFO] Using SSL cert: %s\n", viper.GetString("server.sslcert"))
+		log.Printf("[INFO] Using SSL key: %s\n", viper.GetString("server.sslkey"))
+		log.Printf("[INFO] Starting HTTPS server: https://%s:%s\n", formattedInterface, viper.GetString("server.port"))
 
-		http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), Router)
+		log.Printf("%v\n", http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), Router))
 	} else {
-		log.Printf("[INFO] Starting HTTP server: http://%s:%s", formattedInterface, viper.GetString("server.port"))
-		http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), Router)
+		log.Printf("[INFO] Starting HTTP server: http://%s:%s\n", formattedInterface, viper.GetString("server.port"))
+		log.Printf("%v\n", http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), Router))
 	}
 }
 
@@ -107,13 +107,13 @@ func logDatastoreInfo() {
 
 	switch t := ds.(type) {
 	case datastores.MySqlDB:
-		log.Printf("[INFO] Using MySQL server: %s", ds.(datastores.MySqlDB).Address)
-		log.Printf("[INFO] Using MySQL database: %s", ds.(datastores.MySqlDB).Database)
+		log.Printf("[INFO] Using MySQL server: %s\n", ds.(datastores.MySqlDB).Address)
+		log.Printf("[INFO] Using MySQL database: %s\n", ds.(datastores.MySqlDB).Database)
 	case datastores.MSSqlDB:
-		log.Printf("[INFO] Using MSSQL server: %s", ds.(datastores.MSSqlDB).Address)
-		log.Printf("[INFO] Using MSSQL database: %s", ds.(datastores.MSSqlDB).Database)
+		log.Printf("[INFO] Using MSSQL server: %s\n", ds.(datastores.MSSqlDB).Address)
+		log.Printf("[INFO] Using MSSQL database: %s\n", ds.(datastores.MSSqlDB).Database)
 	case datastores.BoltDB:
-		log.Printf("[INFO] Using BoltDB database: %s", ds.(datastores.BoltDB).Database)
+		log.Printf("[INFO] Using BoltDB database: %s\n", ds.(datastores.BoltDB).Database)
 	default:
 		_ = t
 		log.Println("[ERROR] Can't determine datastore type")
