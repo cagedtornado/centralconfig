@@ -1,17 +1,16 @@
-# Start from a Debian image with the latest version of Go installed
-# and a workspace (GOPATH) configured at /go.
-FROM golang
+# Start Alpine linux latest
+FROM alpine:latest
 
 # To configure the app, set environment variables and use the command line flags
 
 # Copy the local package files to the container's workspace.
-ADD . /go/src/github.com/cagedtornado/centralconfig
+ADD centralconfig /centralconfig
+RUN chmod +x /centralconfig ; sync; sleep 1
 
-# Build and install the app inside the container.
-RUN go get github.com/cagedtornado/centralconfig/...
+WORKDIR /
 
 # Run the app by default when the container starts.
-ENTRYPOINT ["/go/bin/centralconfig"]
+ENTRYPOINT ["/centralconfig"]
 
 # Start with the 'serve' command
 CMD ["serve"]
