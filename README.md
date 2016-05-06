@@ -17,6 +17,16 @@ Then visit the url [http://localhost:3000](http://localhost:3000) and you can ad
 
 If no other configuration is specified, BoltDB will be used to store your config items in a file called 'config.db' in the working directory.
 
+### Docker quick start
+To use the centralconfig docker image: 
+
+[Install Docker](https://docs.docker.com/mac/started/)
+
+Start the server:
+```
+docker run --restart=on-failure -d -p 3000:3000 cagedtornado/centralconfig:latest
+```
+
 #### Configuration
 To customize the config, first generate a default config file (with the name centralconfig.yaml):
 ```
