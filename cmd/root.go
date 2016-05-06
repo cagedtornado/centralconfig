@@ -39,6 +39,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+
+	viper.AutomaticEnv() // read in environment variables that match
+
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
@@ -46,12 +49,12 @@ func initConfig() {
 	//	Set our defaults
 	viper.SetDefault("server.port", "3000")
 	viper.SetDefault("server.bind", "")
-	viper.SetDefault("datastore.boltdb.database", "config.db")
+	viper.SetDefault("datastore.type", "boltdb")
+	viper.SetDefault("datastore.database", "config.db")
 
 	viper.SetConfigName("centralconfig") // name of config file (without extension)
 	viper.AddConfigPath("$HOME")         // adding home directory as first search path
 	viper.AddConfigPath(".")             // also look in the working directory
-	viper.AutomaticEnv()                 // read in environment variables that match
 
 	// If a config file is found, read it in
 	// otherwise, make note that there was a problem

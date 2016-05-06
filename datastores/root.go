@@ -54,30 +54,33 @@ func GetConfigDatastore() ConfigService {
 
 	//	Get configuration information and return the appropriate
 	//	provider based on what is configured
-	if viper.Get("datastore") != nil {
-		dsConfig := viper.Sub("datastore")
-		dsType := dsConfig.AllKeys()[0]
+	dsType := viper.GetString("datastore.type")
+
+	if dsType != "" {
 
 		switch dsType {
 		case "mssql":
 			//	If we have MSSQL, use that:
 			return MSSqlDB{
-				Database: dsConfig.GetString("mssql.database"),
-				Address:  dsConfig.GetString("mssql.address"),
-				User:     dsConfig.GetString("mssql.user"),
-				Password: dsConfig.GetString("mssql.password")}
+				Database: viper.GetString("datastore.database"),
+				Address:  viper.GetString("datastore.address"),
+				User:     viper.GetString("datastore.user"),
+				Password: viper.GetString("datastore.password")}
 
 		case "mysql":
 			//	If we have MySQL, use that:
 			return MySqlDB{
-				Database: dsConfig.GetString("mysql.database"),
-				Address:  dsConfig.GetString("mysql.address"),
-				User:     dsConfig.GetString("mysql.user"),
-				Password: dsConfig.GetString("mysql.password")}
+				Database: viper.GetString("datastore.database"),
+				Address:  viper.GetString("datastore.address"),
+				User:     viper.GetString("datastore.user"),
+				Password: viper.GetString("datastore.password")}
+
+		case "boltdb":
+			return BoltDB{
+				Database: viper.GetString("datastore.database")}
 		}
 	}
 
-	//	Last resort:
-	return BoltDB{
-		Database: viper.GetString("datastore.boltdb.database")}
+	return UnknownDB{}
+
 }
