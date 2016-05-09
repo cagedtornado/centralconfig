@@ -35,15 +35,15 @@ func GetConfig(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//	If we found an item, return it (otherwise, return an empty array):
-	configItems := []datastores.ConfigItem{}
+	//	If we found an item, return it (otherwise, return an empty item):
+	configItem := datastores.ConfigItem{}
 	if response.Name != "" {
-		configItems = append(configItems, response)
-		sendDataResponse(rw, "Config item found", configItems)
+		configItem = response
+		sendDataResponse(rw, "Config item found", configItem)
 		return
 	}
 
-	sendDataResponse(rw, "No config item found with that application and name", configItems)
+	sendDataResponse(rw, "No config item found with that application and name", configItem)
 }
 
 //	Set a specific config item
