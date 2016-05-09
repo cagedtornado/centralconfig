@@ -67,8 +67,7 @@ func SetConfig(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
-		configItems := append([]datastores.ConfigItem{}, response)
-		sendDataResponse(rw, "Config item updated", configItems)
+		sendDataResponse(rw, "Config item updated", response)
 	}
 }
 
@@ -93,8 +92,7 @@ func RemoveConfig(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
-		configItems := append([]datastores.ConfigItem{}, *request)
-		sendDataResponse(rw, "Config item removed", configItems)
+		sendDataResponse(rw, "Config item removed", *request)
 	}
 }
 
