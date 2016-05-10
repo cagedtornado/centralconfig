@@ -3,11 +3,13 @@ package cmd
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/cagedtornado/centralconfig/api"
 	"github.com/cagedtornado/centralconfig/datastores"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,6 +18,7 @@ var (
 	serverInterface   string
 	serverPort        int
 	serverUIDirectory string
+	allowedOrigins    string
 )
 
 // serveCmd represents the serve command
@@ -68,6 +71,14 @@ func serve(cmd *cobra.Command, args []string) {
 		Router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir(viper.GetString("server.ui-dir")))))
 	}
 
+	//	Setup the CORS options:
+	log.Printf("[INFO] Allowed CORS origins: %s\n", viper.GetString("server.allowed-origins"))
+	c := cors.New(cors.Options{
+		AllowedOrigins:   strings.Split(allowedOrigins, ","),
+		AllowCredentials: true,
+	})
+	corsHandler := c.Handler(Router)
+
 	//	Format the bound interface:
 	formattedInterface := viper.GetString("server.bind")
 	if formattedInterface == "" {
@@ -80,10 +91,10 @@ func serve(cmd *cobra.Command, args []string) {
 		log.Printf("[INFO] Using SSL key: %s\n", viper.GetString("server.sslkey"))
 		log.Printf("[INFO] Starting HTTPS server: https://%s:%s\n", formattedInterface, viper.GetString("server.port"))
 
-		log.Printf("[ERROR] %v\n", http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), Router))
+		log.Printf("[ERROR] %v\n", http.ListenAndServeTLS(viper.GetString("server.bind")+":"+viper.GetString("server.port"), viper.GetString("server.sslcert"), viper.GetString("server.sslkey"), corsHandler))
 	} else {
 		log.Printf("[INFO] Starting HTTP server: http://%s:%s\n", formattedInterface, viper.GetString("server.port"))
-		log.Printf("[ERROR] %v\n", http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), Router))
+		log.Printf("[ERROR] %v\n", http.ListenAndServe(viper.GetString("server.bind")+":"+viper.GetString("server.port"), corsHandler))
 	}
 }
 
@@ -94,11 +105,13 @@ func init() {
 	serveCmd.Flags().IntVarP(&serverPort, "port", "p", 1313, "port on which the server will listen")
 	serveCmd.Flags().StringVarP(&serverInterface, "bind", "i", "", "interface to which the server will bind")
 	serveCmd.Flags().StringVarP(&serverUIDirectory, "ui-dir", "u", "", "directory for the UI")
+	serveCmd.Flags().StringVarP(&allowedOrigins, "allowed-origins", "o", "", "comma seperated list of allowed CORS origins")
 
 	//	Bind config flags for optional config file override:
 	viper.BindPFlag("server.port", serveCmd.Flags().Lookup("port"))
 	viper.BindPFlag("server.bind", serveCmd.Flags().Lookup("bind"))
 	viper.BindPFlag("server.ui-dir", serveCmd.Flags().Lookup("ui-dir"))
+	viper.BindPFlag("server.allowed-origins", serveCmd.Flags().Lookup("allowed-origins"))
 }
 
 func logDatastoreInfo() {

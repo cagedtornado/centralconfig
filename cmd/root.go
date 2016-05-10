@@ -49,6 +49,7 @@ func initConfig() {
 	//	Set our defaults
 	viper.SetDefault("server.port", "3000")
 	viper.SetDefault("server.bind", "")
+	viper.SetDefault("server.allowed-origins", "*")
 	viper.SetDefault("datastore.type", "boltdb")
 	viper.SetDefault("datastore.database", "config.db")
 
