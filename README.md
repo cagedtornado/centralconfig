@@ -1,7 +1,8 @@
 # centralconfig [![Circle CI](https://circleci.com/gh/cagedtornado/centralconfig.svg?style=svg)](https://circleci.com/gh/cagedtornado/centralconfig)
-A simple REST based service for managing application configuration across a cluster using a SQL back-end.  Runs on Linux/Windows/OSX/FreeBSD/Raspberry Pi.
+A simple REST based service for managing application configuration across a cluster using a SQL back-end.  
+Runs natively on: Linux, [Windows](https://www.microsoft.com/en-us/windows), [OSX](http://www.apple.com/osx/), [FreeBSD](https://www.freebsd.org/), [NetBSD](https://www.netbsd.org/), [OpenBSD](http://www.openbsd.org/), and even [Raspberry Pi](https://www.raspberrypi.org/).
 
-Back-ends supported:
+Configuration storage back-ends supported:
 - [BoltDB](https://github.com/boltdb/bolt) (default)
 - [MySQL](https://www.mysql.com/)
 - [Microsoft SQL server (MSSQL)](https://www.microsoft.com/en-us/server-cloud/products/sql-server/)
@@ -27,7 +28,7 @@ Start the server:
 docker run --restart=on-failure -d -p 3000:3000 cagedtornado/centralconfig:latest
 ```
 
-#### Configuration
+### Configuration
 To customize the config, first generate a default config file (with the name centralconfig.yaml):
 ```
 centralconfig defaults > centralconfig.yaml
