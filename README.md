@@ -1,8 +1,8 @@
 # centralconfig [![Circle CI](https://circleci.com/gh/cagedtornado/centralconfig.svg?style=svg)](https://circleci.com/gh/cagedtornado/centralconfig)
-A simple REST based service for managing application configuration across a cluster using a SQL back-end.  
+A simple REST based service for managing application configuration across a cluster.  
 Runs natively on: Linux, [Windows](https://www.microsoft.com/en-us/windows), [OSX](http://www.apple.com/osx/), [FreeBSD](https://www.freebsd.org/), [NetBSD](https://www.netbsd.org/), [OpenBSD](http://www.openbsd.org/), and even [Raspberry Pi](https://www.raspberrypi.org/).
 
-Configuration storage back-ends supported:
+Storage back-ends supported:
 - [BoltDB](https://github.com/boltdb/bolt) (default)
 - [MySQL](https://www.mysql.com/)
 - [Microsoft SQL server (MSSQL)](https://www.microsoft.com/en-us/server-cloud/products/sql-server/)
