@@ -39,7 +39,7 @@ dependencies:
     # is in the correct Go workspace structure
     - mkdir -p "$PROJECT_DIR"
     - rsync -azC --delete ./ --include=".git" "$PROJECT_DIR"
-    - rm -rf centralconfig
+    - rm -rf $CIRCLE_PROJECT_REPONAME
     - env GOOS=windows go get -d -v $PACKAGE_PATH/...
     - go get -t -d -v $PACKAGE_PATH/...    
   post: 
