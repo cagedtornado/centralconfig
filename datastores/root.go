@@ -15,10 +15,17 @@ type ConfigItem struct {
 	LastUpdated time.Time `sql:"updated" json:"updated"`
 }
 
+//	ConfigResponse represents an API response
 type ConfigResponse struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
+}
+
+//	WebSocketResponse represents a WebSocket event response
+type WebSocketResponse struct {
+	Type string     `json:"type"`
+	Data ConfigItem `json:"data"`
 }
 
 //	ConfigService encapsulates account (user) based operations

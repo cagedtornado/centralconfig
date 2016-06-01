@@ -1,11 +1,16 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/cagedtornado/centralconfig/datastores"
+)
+
+var (
+	WsHub = NewHub()
 )
 
 func ShowUI(rw http.ResponseWriter, req *http.Request) {
@@ -67,6 +72,7 @@ func SetConfig(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
+		WsHub.Broadcast <- []byte(getWSResponse("Updated", response))
 		sendDataResponse(rw, "Config item updated", response)
 	}
 }
@@ -92,6 +98,7 @@ func RemoveConfig(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
+		WsHub.Broadcast <- []byte(getWSResponse("Removed", *request))
 		sendDataResponse(rw, "Config item removed", *request)
 	}
 }
@@ -205,4 +212,23 @@ func sendDataResponse(rw http.ResponseWriter, message string, dataItems interfac
 	//	Serialize to JSON & return the response:
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(rw).Encode(response)
+}
+
+//	Gets a JSON formatted WebSocket event response
+func getWSResponse(messageType string, item datastores.ConfigItem) string {
+	//	Our default return value:
+	retval := ""
+
+	//	Our WebSocket return value
+	response := datastores.WebSocketResponse{
+		Data: item,
+		Type: messageType}
+
+	//	Serialize to JSON and return as a string:
+	responseBytes := new(bytes.Buffer)
+	if err := json.NewEncoder(responseBytes).Encode(&response); err == nil {
+		retval = responseBytes.String()
+	}
+
+	return retval
 }
