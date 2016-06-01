@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/cagedtornado/centralconfig/datastores"
+	"github.com/gorilla/websocket"
 )
 
 func ShowUI(rw http.ResponseWriter, req *http.Request) {
@@ -205,4 +206,16 @@ func sendDataResponse(rw http.ResponseWriter, message string, dataItems interfac
 	//	Serialize to JSON & return the response:
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(rw).Encode(response)
+}
+
+var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
+
+func WSUpdates(w http.ResponseWriter, r *http.Request) {
+	//	Upgrade the connection
+	wsConn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		//	 Do we need to do anything here?
+		return
+	}
+
 }
