@@ -1,12 +1,16 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/cagedtornado/centralconfig/datastores"
-	"github.com/gorilla/websocket"
+)
+
+var (
+	WsHub = NewHub()
 )
 
 func ShowUI(rw http.ResponseWriter, req *http.Request) {
@@ -68,6 +72,7 @@ func SetConfig(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
+		WsHub.Broadcast <- []byte(getWSResponse("Updated", response))
 		sendDataResponse(rw, "Config item updated", response)
 	}
 }
@@ -93,6 +98,7 @@ func RemoveConfig(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusInternalServerError)
 	} else {
+		WsHub.Broadcast <- []byte(getWSResponse("Removed", *request))
 		sendDataResponse(rw, "Config item removed", *request)
 	}
 }
@@ -208,14 +214,21 @@ func sendDataResponse(rw http.ResponseWriter, message string, dataItems interfac
 	json.NewEncoder(rw).Encode(response)
 }
 
-var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
+//	Gets a JSON formatted WebSocket event response
+func getWSResponse(messageType string, item datastores.ConfigItem) string {
+	//	Our default return value:
+	retval := ""
 
-func WSUpdates(w http.ResponseWriter, r *http.Request) {
-	//	Upgrade the connection
-	wsConn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		//	 Do we need to do anything here?
-		return
+	//	Our WebSocket return value
+	response := datastores.WebSocketResponse{
+		Data: item,
+		Type: messageType}
+
+	//	Serialize to JSON and return as a string:
+	responseBytes := new(bytes.Buffer)
+	if err := json.NewEncoder(responseBytes).Encode(&response); err == nil {
+		retval = responseBytes.String()
 	}
 
+	return retval
 }

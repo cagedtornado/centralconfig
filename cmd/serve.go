@@ -52,7 +52,9 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/config/getallforapp", api.GetAllConfigForApp)
 	Router.HandleFunc("/config/init", api.InitStore)
 	Router.HandleFunc("/applications/getall", api.GetAllApplications)
-	Router.HandleFunc("/ws/updates", api.WSUpdates)
+
+	//	Websocket connections
+	Router.Handle("/ws", api.WsHandler{H: api.WsHub})
 
 	//	If we don't have a UI directory specified...
 	if viper.GetString("server.ui-dir") == "" {
