@@ -1,5 +1,5 @@
 # Start Alpine linux latest
-FROM alpine:latest
+FROM alpine:3.2
 
 # To configure the app, set environment variables and use the command line flags
 
