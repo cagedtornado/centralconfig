@@ -4,7 +4,7 @@ FROM alpine:3.2
 # To configure the app, set environment variables and use the command line flags
 
 # Copy the local package files to the container's workspace.
-ADD centralconfig /centralconfig
+COPY centralconfig /
 RUN chmod +x /centralconfig ; sync; sleep 1
 
 WORKDIR /
