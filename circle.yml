@@ -4,6 +4,7 @@ machine:
   environment:
     PACKAGE_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"    
     GOPATH: "$HOME/.go_workspace"
+    DOCKER_DIR: "$HOME/.docker_workspace"
     PROJECT_DIR: "$GOPATH/src/$PACKAGE_PATH"
     GODIST: "go1.6.2.linux-amd64.tar.gz"
     NATIVE_BINARY: "$CIRCLE_ARTIFACTS/centralconfig_linux_amd64"
@@ -39,9 +40,10 @@ dependencies:
     # is in the correct Go workspace structure
     - mkdir -p "$PROJECT_DIR"
     - rsync -azC --delete ./ --include=".git" "$PROJECT_DIR"
-    - rm -rf --verbose $CIRCLE_PROJECT_REPONAME    
     - env GOOS=windows go get -d -v $PACKAGE_PATH/...
-    - go get -t -d -v $PACKAGE_PATH/...    
+    - go get -t -d -v $PACKAGE_PATH/...
+    # Create our docker workspace
+    - mkdir -p "$DOCKER_DIR"
   post: 
     # Setup our UI 
     - mkdir -p /tmp/ui/js
@@ -54,7 +56,7 @@ dependencies:
     # Install for our platform to be able to generate 
     # SQL DDL for our integration tests 
     - go install $PACKAGE_PATH/...
-    - centralconfig defaults --mysql > mysql.sql
+    - centralconfig defaults --mysql > mysql.sql    
   cache_directories:
     - ~/download
 database:
@@ -70,21 +72,19 @@ test:
     - go test -v -race $PACKAGE_PATH/...
   post:    
     - go test -v -race $PACKAGE_PATH/... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
+    # Build and tag our docker image            
+    - cp $NATIVE_BINARY $DOCKER_DIR/centralconfig
+    - cp $PROJECT_DIR/Dockerfile $DOCKER_DIR/
+    - docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME $DOCKER_DIR
+    - docker tag $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_BUILD_NUM
 deployment:
   release:
     branch: master
     commands:
-    # Sanity check: Reset local workspace
-    - rm -rf --verbose centralconfig
     # Multi-platform compile with version information      
     - gox -ldflags "-X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...   
     # Publish assets to Github
-    - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/ || true
-    # Build and tag our docker image            
-    - cp $NATIVE_BINARY centralconfig
-    - cp $PROJECT_DIR/Dockerfile .
-    - docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
-    - docker tag $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_BUILD_NUM
+    - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM $CIRCLE_ARTIFACTS/ || true    
     # Push to docker
     - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
     - docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
