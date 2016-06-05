@@ -1,19 +1,16 @@
 # Start Alpine linux latest
-FROM alpine:latest
+FROM golang
 
 # To configure the app, set environment variables and use the command line flags
 
-# Copy the local package files to the container's workspace.
+# Copy the local package files to the container's workspace and set permissions
 COPY centralconfig /
 RUN chmod +x /centralconfig ; sync; sleep 1
 
 WORKDIR /
 
-# Run the app by default when the container starts.
-ENTRYPOINT ["/centralconfig"]
-
 # Start with the 'serve' command
-CMD ["serve"]
+CMD ["/centralconfig", "serve"]
 
 # Document that the app listens on port 3000.
 EXPOSE 3000

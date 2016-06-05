@@ -4,7 +4,7 @@ machine:
   environment:
     PACKAGE_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"    
     GOPATH: "$HOME/.go_workspace"
-    DOCKER_DIR: "$HOME/.docker_workspace"
+    DOCKER_DIR: "$HOME/docker_workspace"
     PROJECT_DIR: "$GOPATH/src/$PACKAGE_PATH"
     GODIST: "go1.6.2.linux-amd64.tar.gz"
     NATIVE_BINARY: "$CIRCLE_ARTIFACTS/centralconfig_linux_amd64"
@@ -13,7 +13,9 @@ machine:
     - mkdir -p download
     - test -e download/$GODIST || curl -o download/$GODIST https://storage.googleapis.com/golang/$GODIST
     - sudo rm -rf /usr/local/go
-    - sudo tar -C /usr/local -xzf download/$GODIST
+    - sudo tar -C /usr/local -xzf download/$GODIST    
+    # Create our docker workspace
+    - mkdir -p "$DOCKER_DIR"
 checkout:
   post:
     # Get our UI source
@@ -36,14 +38,13 @@ dependencies:
     # Unit test reports
     - go get -u github.com/jstemmer/go-junit-report 
   override:
-    # Go configuration on CircleCI is wonky.  Make our code
-    # is in the correct Go workspace structure
+    # Create our project workspace
     - mkdir -p "$PROJECT_DIR"
+    # Go configuration on CircleCI is wonky.  Make our code
+    # is in the correct Go workspace structure    
     - rsync -azC --delete ./ --include=".git" "$PROJECT_DIR"
     - env GOOS=windows go get -d -v $PACKAGE_PATH/...
-    - go get -t -d -v $PACKAGE_PATH/...
-    # Create our docker workspace
-    - mkdir -p "$DOCKER_DIR"
+    - go get -t -d -v $PACKAGE_PATH/...    
   post: 
     # Setup our UI 
     - mkdir -p /tmp/ui/js
