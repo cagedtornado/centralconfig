@@ -14,6 +14,8 @@ type BoltDB struct {
 	Password string
 }
 
+const system_ids string = "system_ids"
+
 //	If we need to list applications, we can do so by listing buckets:
 //	https://github.com/boltdb/bolt/issues/295
 
@@ -220,7 +222,11 @@ func (store BoltDB) GetAllApplications() ([]string, error) {
 	//	Get a list of all buckets
 	err = db.View(func(tx *bolt.Tx) error {
 		return tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
-			bucketList = append(bucketList, string(name))
+			//	As long as the bucket name isn't the reserved 'system_ids' bucket
+			//	return the bucket name as an application name
+			if string(name) != system_ids {
+				bucketList = append(bucketList, string(name))
+			}
 			return nil
 		})
 	})
@@ -252,7 +258,7 @@ func (store BoltDB) Set(configItem *ConfigItem) (ConfigItem, error) {
 		// This returns an error only if the Tx is closed or not writeable.
 		// That can't happen in an Update() call so I ignore the error check.
 		if configItem.Id == 0 {
-			bids, err := tx.CreateBucketIfNotExists([]byte("centralconfig_ids"))
+			bids, err := tx.CreateBucketIfNotExists([]byte(system_ids))
 			if err != nil {
 				return err
 			}
