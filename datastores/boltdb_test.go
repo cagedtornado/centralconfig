@@ -527,3 +527,46 @@ func TestBoltDB_Remove_WithMachine_Successful(t *testing.T) {
 		t.Errorf("Remove failed: Should have removed an item without error: %s", err)
 	}
 }
+
+//	Bolt set then get should work
+func TestBoltDB_Set_ThenGet_MultipleApps_HaveDifferentIds(t *testing.T) {
+	//	Arrange
+	filename := "testing.db"
+	defer os.Remove(filename)
+
+	db := datastores.BoltDB{
+		Database: filename}
+
+	ct1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	ct2 := &datastores.ConfigItem{
+		Application: "MyOtherTestAppName",
+		Name:        "TestItem1",
+		Value:       "Value1"}
+
+	query1 := &datastores.ConfigItem{
+		Application: "MyTestAppName",
+		Name:        "TestItem1"}
+
+	query2 := &datastores.ConfigItem{
+		Application: "MyOtherTestAppName",
+		Name:        "TestItem1"}
+
+	//	Act
+	db.Set(ct1)
+	db.Set(ct2)
+	response1, err1 := db.Get(query1)
+	response2, err2 := db.Get(query2)
+
+	//	Assert
+	if err1 != nil || err2 != nil {
+		t.Errorf("Get failed: Should have returned config items without error: %s / %s", err1, err2)
+	}
+
+	if response1.Id == response2.Id {
+		t.Errorf("Get failed: Should have returned unique ids but returned %v instead", response1.Id)
+	}
+}

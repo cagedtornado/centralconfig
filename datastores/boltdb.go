@@ -252,7 +252,11 @@ func (store BoltDB) Set(configItem *ConfigItem) (ConfigItem, error) {
 		// This returns an error only if the Tx is closed or not writeable.
 		// That can't happen in an Update() call so I ignore the error check.
 		if configItem.Id == 0 {
-			id, _ := b.NextSequence()
+			bids, err := tx.CreateBucketIfNotExists([]byte("centralconfig_ids"))
+			if err != nil {
+				return err
+			}
+			id, _ := bids.NextSequence()
 			configItem.Id = int64(id)
 		}
 
