@@ -24,7 +24,7 @@ func GetConfig(rw http.ResponseWriter, req *http.Request) {
 
 	//	Decode the request:
 	request := datastores.ConfigItem{}
-	err := json.NewDecoder(req.Body).Decode(request)
+	err := json.NewDecoder(req.Body).Decode(&request)
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusBadRequest)
 		return
@@ -58,7 +58,7 @@ func SetConfig(rw http.ResponseWriter, req *http.Request) {
 
 	//	Decode the request:
 	request := datastores.ConfigItem{}
-	err := json.NewDecoder(req.Body).Decode(request)
+	err := json.NewDecoder(req.Body).Decode(&request)
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusBadRequest)
 		return
@@ -84,7 +84,7 @@ func RemoveConfig(rw http.ResponseWriter, req *http.Request) {
 
 	//	Decode the request:
 	request := datastores.ConfigItem{}
-	err := json.NewDecoder(req.Body).Decode(request)
+	err := json.NewDecoder(req.Body).Decode(&request)
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusBadRequest)
 		return
@@ -110,7 +110,7 @@ func GetAllConfigForApp(rw http.ResponseWriter, req *http.Request) {
 
 	//	Decode the request:
 	request := &datastores.ConfigItem{}
-	err := json.NewDecoder(req.Body).Decode(request)
+	err := json.NewDecoder(req.Body).Decode(&request)
 	if err != nil {
 		sendErrorResponse(rw, err, http.StatusBadRequest)
 		return
