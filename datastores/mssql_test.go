@@ -62,7 +62,7 @@ func TestMssql_Get_ItemDoesntExist_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	query := &datastores.ConfigItem{
+	query := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2"}
 
@@ -90,7 +90,7 @@ func TestMssql_Set_Successful(t *testing.T) {
 	resetMSSQLTestDB(db)
 
 	//	Try storing some config items:
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
@@ -118,17 +118,17 @@ func TestMssql_Set_ThenGet_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct2 := &datastores.ConfigItem{
+	ct2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
-	query := &datastores.ConfigItem{
+	query := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2"}
 
@@ -158,26 +158,26 @@ func TestMssql_Set_ThenGet_Global_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct2 := &datastores.ConfigItem{
+	ct2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
-	ct3 := &datastores.ConfigItem{
+	ct3 := datastores.ConfigItem{
 		Application: "*",
 		Name:        "TestItem3",
 		Value:       "Value2"}
 
-	query := &datastores.ConfigItem{
+	query := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem3"} // This item wasn't set for MyTestAppName - the global default should be used
 
-	query2 := &datastores.ConfigItem{
+	query2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2"} // This item WAS set for MyTestAppName
 
@@ -213,27 +213,27 @@ func TestMssql_Set_ThenGet_WithMachine_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct_nomachine := &datastores.ConfigItem{
+	ct_nomachine := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2_NO_MACHINE"}
 
-	ct_withmachine := &datastores.ConfigItem{
+	ct_withmachine := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Machine:     "APPBOX1", // This config item is machine specific
 		Value:       "Value2_SET_WITH_MACHINE"}
 
-	query := &datastores.ConfigItem{
+	query := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2"}
 
-	query2 := &datastores.ConfigItem{
+	query2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Machine:     "APPBOX1", // Notice that this has a machine in the query
 		Name:        "TestItem2"}
@@ -269,17 +269,17 @@ func TestMssql_GetAllForApplication_NoMachine_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct2 := &datastores.ConfigItem{
+	ct2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
-	query := &datastores.ConfigItem{
+	query := datastores.ConfigItem{
 		Application: "MyTestAppName"}
 
 	//	Act
@@ -307,23 +307,23 @@ func TestMssql_GetAllForApplication_WithMachine_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct2 := &datastores.ConfigItem{
+	ct2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
-	ct3 := &datastores.ConfigItem{
+	ct3 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Machine:     "APPBOX1",
 		Value:       "Value2"}
 
-	query := &datastores.ConfigItem{
+	query := datastores.ConfigItem{
 		Application: "MyTestAppName"}
 
 	//	Act
@@ -352,22 +352,22 @@ func TestMssql_GetAll_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct2 := &datastores.ConfigItem{
+	ct2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
-	ct3 := &datastores.ConfigItem{
+	ct3 := datastores.ConfigItem{
 		Application: "OtherTestApp",
 		Name:        "TestItem3",
 		Value:       "Value2"}
 
-	ct4 := &datastores.ConfigItem{
+	ct4 := datastores.ConfigItem{
 		Application: "*",
 		Name:        "TestItem4",
 		Value:       "Value2"}
@@ -421,22 +421,22 @@ func TestMssql_GetAllApplications_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
 
-	ct2 := &datastores.ConfigItem{
+	ct2 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem2",
 		Value:       "Value2"}
 
-	ct3 := &datastores.ConfigItem{
+	ct3 := datastores.ConfigItem{
 		Application: "OtherTestApp",
 		Name:        "TestItem3",
 		Value:       "Value2"}
 
-	ct4 := &datastores.ConfigItem{
+	ct4 := datastores.ConfigItem{
 		Application: "*",
 		Name:        "TestItem4",
 		Value:       "Value2"}
@@ -491,7 +491,7 @@ func TestMssql_Remove_ItemDoesntExist_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
@@ -515,7 +515,7 @@ func TestMssql_Remove_NoMachine_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Value:       "Value1"}
@@ -540,7 +540,7 @@ func TestMssql_Remove_WithMachine_Successful(t *testing.T) {
 	db := getMSSQLDBConnection()
 	resetMSSQLTestDB(db)
 
-	ct1 := &datastores.ConfigItem{
+	ct1 := datastores.ConfigItem{
 		Application: "MyTestAppName",
 		Name:        "TestItem1",
 		Machine:     "APPBOX1",

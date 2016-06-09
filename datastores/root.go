@@ -38,10 +38,10 @@ type ConfigService interface {
 	InitStore(overwrite bool) error
 
 	//	Create / update a config item
-	Set(c *ConfigItem) (ConfigItem, error)
+	Set(c ConfigItem) (ConfigItem, error)
 
 	//	Get a specific config item
-	Get(c *ConfigItem) (ConfigItem, error)
+	Get(c ConfigItem) (ConfigItem, error)
 
 	//	Get all config items for the given application
 	GetAllForApplication(application string) ([]ConfigItem, error)
@@ -53,7 +53,7 @@ type ConfigService interface {
 	GetAllApplications() ([]string, error)
 
 	//	Remove a config item
-	Remove(c *ConfigItem) error
+	Remove(c ConfigItem) error
 }
 
 //	Get the currently configured datastore

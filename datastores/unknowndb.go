@@ -7,7 +7,7 @@ func (store UnknownDB) InitStore(overwrite bool) error {
 	return nil
 }
 
-func (store UnknownDB) Get(configItem *ConfigItem) (ConfigItem, error) {
+func (store UnknownDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	return ConfigItem{}, nil
 }
 
@@ -23,10 +23,10 @@ func (store UnknownDB) GetAllApplications() ([]string, error) {
 	return nil, nil
 }
 
-func (store UnknownDB) Set(configItem *ConfigItem) (ConfigItem, error) {
+func (store UnknownDB) Set(configItem ConfigItem) (ConfigItem, error) {
 	return ConfigItem{}, nil
 }
 
-func (store UnknownDB) Remove(configItem *ConfigItem) error {
+func (store UnknownDB) Remove(configItem ConfigItem) error {
 	return nil
 }

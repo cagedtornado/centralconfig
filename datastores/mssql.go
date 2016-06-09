@@ -63,7 +63,7 @@ func (store MSSqlDB) InitStore(overwrite bool) error {
 	return nil
 }
 
-func (store MSSqlDB) Get(configItem *ConfigItem) (ConfigItem, error) {
+func (store MSSqlDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	//	Our return item:
 	retval := ConfigItem{}
 
@@ -356,7 +356,7 @@ func (store MSSqlDB) GetAllApplications() ([]string, error) {
 	return retval, nil
 }
 
-func (store MSSqlDB) Set(configItem *ConfigItem) (ConfigItem, error) {
+func (store MSSqlDB) Set(configItem ConfigItem) (ConfigItem, error) {
 	//	Our return item:
 	retval := ConfigItem{}
 
@@ -418,7 +418,7 @@ func (store MSSqlDB) Set(configItem *ConfigItem) (ConfigItem, error) {
 	return retval, nil
 }
 
-func (store MSSqlDB) Remove(configItem *ConfigItem) error {
+func (store MSSqlDB) Remove(configItem ConfigItem) error {
 	//	Open the database:
 	db, err := sql.Open("mssql", fmt.Sprintf("server=%s;database=%s;user id=%s;password=%s", store.Address, store.Database, store.User, store.Password))
 	defer db.Close()

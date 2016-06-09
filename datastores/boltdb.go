@@ -27,7 +27,7 @@ func (store BoltDB) InitStore(overwrite bool) error {
 	return err
 }
 
-func (store BoltDB) Get(configItem *ConfigItem) (ConfigItem, error) {
+func (store BoltDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	//	Our return item:
 	retval := ConfigItem{}
 
@@ -234,10 +234,10 @@ func (store BoltDB) GetAllApplications() ([]string, error) {
 	return bucketList, err
 }
 
-func (store BoltDB) Set(configItem *ConfigItem) (ConfigItem, error) {
+func (store BoltDB) Set(configItem ConfigItem) (ConfigItem, error) {
 
 	//	Our return item:
-	retval := *configItem
+	retval := ConfigItem{}
 
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
@@ -285,10 +285,13 @@ func (store BoltDB) Set(configItem *ConfigItem) (ConfigItem, error) {
 		return b.Put([]byte(keyName), encoded)
 	})
 
+	//	Set our return item:
+	retval = configItem
+
 	return retval, err
 }
 
-func (store BoltDB) Remove(configItem *ConfigItem) error {
+func (store BoltDB) Remove(configItem ConfigItem) error {
 
 	//	Open the database:
 	db, err := bolt.Open(store.Database, 0600, nil)
