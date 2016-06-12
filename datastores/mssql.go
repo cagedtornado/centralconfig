@@ -75,7 +75,7 @@ func (store MSSqlDB) Get(configItem ConfigItem) (ConfigItem, error) {
 	}
 
 	//	Prepare our query
-	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=? and name=? and machine=?")
+	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=? and name=? and machine=? order by name")
 	defer stmt.Close()
 	if err != nil {
 		return retval, err
@@ -202,7 +202,7 @@ func (store MSSqlDB) GetAllForApplication(application string) ([]ConfigItem, err
 	}
 
 	//	Prepare our query
-	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=?")
+	stmt, err := db.Prepare("select id, application, name, value, machine, updated from configitem where application=? order by name")
 	defer stmt.Close()
 	if err != nil {
 		return retval, err
@@ -287,7 +287,7 @@ func (store MSSqlDB) GetAll() ([]ConfigItem, error) {
 	}
 
 	//	Get all config items
-	rows, err := db.Query("select id, application, name, value, machine, updated from configitem")
+	rows, err := db.Query("select id, application, name, value, machine, updated from configitem order by application, name")
 	defer rows.Close()
 	if err != nil {
 		return retval, err
@@ -333,7 +333,7 @@ func (store MSSqlDB) GetAllApplications() ([]string, error) {
 	}
 
 	//	Get all applications
-	rows, err := db.Query("select distinct application from configitem")
+	rows, err := db.Query("select distinct application from configitem order by application")
 	defer rows.Close()
 	if err != nil {
 		return retval, err
