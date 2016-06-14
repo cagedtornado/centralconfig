@@ -21,7 +21,7 @@ CREATE TABLE configitem (
   UNIQUE KEY id_UNIQUE (id),
   UNIQUE KEY app_name_machine (application,name,machine),
   KEY idx_application (application)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 `)
 
 //	The MysqlDB database information
