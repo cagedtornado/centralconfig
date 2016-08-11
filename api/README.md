@@ -17,9 +17,9 @@ For example:
 
 ```json
 {
-    "application" : "WickedCool",
-    "name": "TestItem42",
-    "value": "Magic!"
+    "application" : "AccountingReports",
+    "name": "ShowObscureFactoids",
+    "value": "true"
 }
 ```
 
@@ -30,44 +30,46 @@ For Example:
 ```json
 {
   "status": 200,
-  "message": "Config items found",
-  "data": [
-    {
-      "id": 1,
-      "application": "*",
-      "machine": "",
-      "name": "Environment",
-      "value": "DEV",
-      "updated": "2016-04-26T09:11:17.897Z"
-    },
-    {
-      "id": 2,
-      "application": "TestApp",
-      "machine": "",
-      "name": "AppUser",
-      "value": "TestApp_dev",
-      "updated": "2016-04-26T09:11:40.34Z"
-    }
-  ]
+  "message": "Config item found",
+  "data": {
+    "id": 6,
+    "application": "AccountingReports",
+    "machine": "",
+    "name": "ShowFooterDates",
+    "value": "true",
+    "updated": "2016-08-11T14:49:38.1555535-04:00"
+  }
 }
 ```
 
 
 ### /config/get
 
-This operation retrieves a single configuration item.  If it doesn't exist for the given application, it attemps to get it for the default application (*)
+This operation retrieves a single configuration item.  If it doesn't exist for the given application, it attemps to get it for the default application (*). 
+
+This is an HTTP `POST` request
 
 ######Example request:
 ```json
 {
-  "name": "test"
+    "application" : "AccountingReports",
+    "name" : "ShowFooterDates" 
 }
 ```
 
 ######Example response:
 ```json
 {
-  "name": "test"
+  "status": 200,
+  "message": "Config item found",
+  "data": {
+    "id": 6,
+    "application": "AccountingReports",
+    "machine": "",
+    "name": "ShowFooterDates",
+    "value": "true",
+    "updated": "2016-08-11T14:49:38.1555535-04:00"
+  }
 }
 ```
 
@@ -75,17 +77,30 @@ This operation retrieves a single configuration item.  If it doesn't exist for t
 
 This operation sets the value of a single configuration item
 
+This is an HTTP `POST` request
+
 ######Example request:
 ```json
 {
-  "name": "test"
+    "application" : "AccountingReports",
+    "name" : "ShowHeaderValues",
+    "value": "false"
 }
 ```
 
 ######Example response:
 ```json
 {
-  "name": "test"
+  "status": 200,
+  "message": "Config item updated",
+  "data": {
+    "id": 10,
+    "application": "AccountingReports",
+    "machine": "",
+    "name": "ShowHeaderValues",
+    "value": "false",
+    "updated": "2016-08-11T14:58:16.0132648-04:00"
+  }
 }
 ```
 
@@ -96,14 +111,24 @@ This operation removes a single configuration item
 ######Example request:
 ```json
 {
-  "name": "test"
+    "application" : "AccountingReports",
+    "name" : "ShowHeaderValues"
 }
 ```
 
 ######Example response:
 ```json
 {
-  "name": "test"
+  "status": 200,
+  "message": "Config item removed",
+  "data": {
+    "id": 0,
+    "application": "AccountingReports",
+    "machine": "",
+    "name": "ShowHeaderValues",
+    "value": "",
+    "updated": "0001-01-01T00:00:00Z"
+  }
 }
 ```
 
@@ -120,28 +145,36 @@ This is a `GET` request.
   "message": "Config items found",
   "data": [
     {
-      "id": 2,
-      "application": "MyApp",
+      "id": 7,
+      "application": "AccountingReports",
       "machine": "",
-      "name": "Another",
-      "value": "Value1",
-      "updated": "2016-06-09T15:57:07.1052893-04:00"
+      "name": "Name",
+      "value": "Accounting reporting system",
+      "updated": "2016-08-11T14:50:17.3451641-04:00"
     },
     {
-      "id": 1,
-      "application": "MyApp",
+      "id": 6,
+      "application": "AccountingReports",
       "machine": "",
-      "name": "Environment",
-      "value": "DEV",
-      "updated": "2016-06-09T15:56:51.4547244-04:00"
+      "name": "ShowFooterDates",
+      "value": "true",
+      "updated": "2016-08-11T14:49:38.1555535-04:00"
     },
     {
-      "id": 4,
-      "application": "SomeOtherAppEntirely",
+      "id": 8,
+      "application": "ITSupportDesk",
       "machine": "",
-      "name": "TheName",
-      "value": "TheValue",
-      "updated": "2016-06-09T15:59:53.6649436-04:00"
+      "name": "ShowEmailLinks",
+      "value": "false",
+      "updated": "2016-08-11T14:50:51.4152237-04:00"
+    },
+    {
+      "id": 9,
+      "application": "ITSupportDesk",
+      "machine": "",
+      "name": "SupportNumber",
+      "value": "1 (415) 344-3200",
+      "updated": "2016-08-11T14:52:53.4456194-04:00"
     }
   ]
 }
@@ -151,17 +184,38 @@ This is a `GET` request.
 
 This operation retrieves all configuration items for a specified application
 
+This is an HTTP `POST` operation
+
 ######Example request:
 ```json
 {
-  "name": "test"
+    "application" : "AccountingReports"
 }
 ```
 
 ######Example response:
 ```json
 {
-  "name": "test"
+  "status": 200,
+  "message": "Config items found",
+  "data": [
+    {
+      "id": 7,
+      "application": "AccountingReports",
+      "machine": "",
+      "name": "Name",
+      "value": "Accounting reporting system",
+      "updated": "2016-08-11T14:50:17.3451641-04:00"
+    },
+    {
+      "id": 6,
+      "application": "AccountingReports",
+      "machine": "",
+      "name": "ShowFooterDates",
+      "value": "true",
+      "updated": "2016-08-11T14:49:38.1555535-04:00"
+    }
+  ]
 }
 ```
 
@@ -169,16 +223,20 @@ This operation retrieves all configuration items for a specified application
 
 This operation retrieves all applications
 
-######Example request:
-```json
-{
-  "name": "test"
-}
-```
+This is an HTTP `GET` operation.
 
 ######Example response:
 ```json
 {
-  "name": "test"
+  "status": 200,
+  "message": "Applications found",
+  "data": [
+    "AccountingReports",
+    "AnotherApp",
+    "DouglasAdams",
+    "FormBuilder",
+    "ITSupportDesk",
+    "SomeOtherAppEntirely"
+  ]
 }
 ```
