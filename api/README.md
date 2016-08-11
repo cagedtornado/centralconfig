@@ -6,7 +6,7 @@ API path              | Description
 [/config/get](https://github.com/danesparza/centralconfig/tree/master/api#configget)           | Gets a single configuration item
 [/config/set](https://github.com/danesparza/centralconfig/tree/master/api#configset)           | Sets (creates or updates) a configuration item
 [/config/remove](https://github.com/danesparza/centralconfig/tree/master/api#configremove)        | Removes a configuration item
-[/config/getall](https://github.com/danesparza/centralconfig/tree/master/api#configall)        | Gets all configuration items
+[/config/getall](https://github.com/danesparza/centralconfig/tree/master/api#configgetall)        | Gets all configuration items
 [/config/getallforapp](https://github.com/danesparza/centralconfig/tree/master/api#configgetallforapp)  | Get all configuration items for a single application (plus the default * application)
 [/applications/getall](https://github.com/danesparza/centralconfig/tree/master/api#applicationsgetall)  | Get all applications
 
