@@ -55,7 +55,7 @@ For Example:
 
 #### /config/get
 
-This operation retrieves a single configuration item
+This operation retrieves a single configuration item.  If it doesn't exist for the given application, it attemps to get it for the default application (*)
 
 Example request:
 ```json
@@ -64,4 +64,121 @@ Example request:
 }
 ```
 
+Example response:
+```json
+{
+  "name": "test"
+}
+```
 
+#### /config/set
+
+This operation sets the value of a single configuration item
+
+Example request:
+```json
+{
+  "name": "test"
+}
+```
+
+Example response:
+```json
+{
+  "name": "test"
+}
+```
+
+#### /config/remove
+
+This operation removes a single configuration item
+
+Example request:
+```json
+{
+  "name": "test"
+}
+```
+
+Example response:
+```json
+{
+  "name": "test"
+}
+```
+
+#### /config/getall
+
+This operation retrieves all configuration items. 
+
+This is a `GET` request.
+
+Example response:
+```json
+{
+  "status": 200,
+  "message": "Config items found",
+  "data": [
+    {
+      "id": 2,
+      "application": "MyApp",
+      "machine": "",
+      "name": "Another",
+      "value": "Value1",
+      "updated": "2016-06-09T15:57:07.1052893-04:00"
+    },
+    {
+      "id": 1,
+      "application": "MyApp",
+      "machine": "",
+      "name": "Environment",
+      "value": "DEV",
+      "updated": "2016-06-09T15:56:51.4547244-04:00"
+    },
+    {
+      "id": 4,
+      "application": "SomeOtherAppEntirely",
+      "machine": "",
+      "name": "TheName",
+      "value": "TheValue",
+      "updated": "2016-06-09T15:59:53.6649436-04:00"
+    }
+  ]
+}
+```
+
+#### /config/getallforapp
+
+This operation retrieves all configuration items for a specified application
+
+Example request:
+```json
+{
+  "name": "test"
+}
+```
+
+Example response:
+```json
+{
+  "name": "test"
+}
+```
+
+#### /applications/getall
+
+This operation retrieves all applications
+
+Example request:
+```json
+{
+  "name": "test"
+}
+```
+
+Example response:
+```json
+{
+  "name": "test"
+}
+```
