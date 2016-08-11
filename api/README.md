@@ -4,13 +4,13 @@ API path              | Description
 ----------            | -----------
 /                     | Redirects to the /UI path (and the web based user interface)
 [/config/get](https://github.com/danesparza/centralconfig/tree/master/api#configget)           | Gets a single configuration item
-/config/set           | Sets (creates or updates) a configuration item
-/config/remove        | Removes a configuration item
-/config/getall        | Gets all configuration items
-/config/getallforapp  | Get all configuration items for a single application (plus the default * application)
-/applications/getall  | Get all applications
+[/config/set](https://github.com/danesparza/centralconfig/tree/master/api#configset)           | Sets (creates or updates) a configuration item
+[/config/remove](https://github.com/danesparza/centralconfig/tree/master/api#configremove)        | Removes a configuration item
+[/config/getall](https://github.com/danesparza/centralconfig/tree/master/api#configall)        | Gets all configuration items
+[/config/getallforapp](https://github.com/danesparza/centralconfig/tree/master/api#configgetallforapp)  | Get all configuration items for a single application (plus the default * application)
+[/applications/getall](https://github.com/danesparza/centralconfig/tree/master/api#applicationsgetall)  | Get all applications
 
-######Requests
+####Requests
 Most API operations expect a configitem object in the POST body that will be used to either filter (in a get operation), update or create (in a set operation), or remove an item (in a remove operation).  
 
 For example:
@@ -23,7 +23,7 @@ For example:
 }
 ```
 
-######Responses
+####Responses
 All operations will return an object that contain the fields status, message, and data.  
 
 For Example:
@@ -53,67 +53,67 @@ For Example:
 ```
 
 
-#### /config/get
+### /config/get
 
 This operation retrieves a single configuration item.  If it doesn't exist for the given application, it attemps to get it for the default application (*)
 
-Example request:
+######Example request:
 ```json
 {
   "name": "test"
 }
 ```
 
-Example response:
+######Example response:
 ```json
 {
   "name": "test"
 }
 ```
 
-#### /config/set
+### /config/set
 
 This operation sets the value of a single configuration item
 
-Example request:
+######Example request:
 ```json
 {
   "name": "test"
 }
 ```
 
-Example response:
+######Example response:
 ```json
 {
   "name": "test"
 }
 ```
 
-#### /config/remove
+### /config/remove
 
 This operation removes a single configuration item
 
-Example request:
+######Example request:
 ```json
 {
   "name": "test"
 }
 ```
 
-Example response:
+######Example response:
 ```json
 {
   "name": "test"
 }
 ```
 
-#### /config/getall
+### /config/getall
 
 This operation retrieves all configuration items. 
 
 This is a `GET` request.
 
-Example response:
+######Example response:
 ```json
 {
   "status": 200,
@@ -147,36 +147,36 @@ Example response:
 }
 ```
 
-#### /config/getallforapp
+### /config/getallforapp
 
 This operation retrieves all configuration items for a specified application
 
-Example request:
+######Example request:
 ```json
 {
   "name": "test"
 }
 ```
 
-Example response:
+######Example response:
 ```json
 {
   "name": "test"
 }
 ```
 
-#### /applications/getall
+### /applications/getall
 
 This operation retrieves all applications
 
-Example request:
+######Example request:
 ```json
 {
   "name": "test"
 }
 ```
 
-Example response:
+######Example response:
 ```json
 {
   "name": "test"
