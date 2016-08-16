@@ -6,7 +6,7 @@ machine:
     GOPATH: "$HOME/.go_workspace"
     DOCKER_DIR: "$HOME/docker_workspace"
     PROJECT_DIR: "$GOPATH/src/$PACKAGE_PATH"
-    GODIST: "go1.6.2.linux-amd64.tar.gz"
+    GODIST: "go1.7.linux-amd64.tar.gz"
     NATIVE_BINARY: "$CIRCLE_ARTIFACTS/centralconfig_linux_amd64"
   post:
     # Install the specified version of Go
