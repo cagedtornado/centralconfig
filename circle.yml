@@ -49,7 +49,7 @@ dependencies:
     # Setup our UI 
     - mkdir -p /tmp/ui/js
     - mkdir -p /tmp/ui/css
-    - cd centralconfig-ui; git describe --tags; npm set progress=false; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp js/bootstrap.min.js /tmp/ui/js; cp js/jquery.min.js /tmp/ui/js; cp index.html /tmp/ui
+    - cd centralconfig-ui; git describe --tags; npm set progress=false; npm install; npm run build; cp css/*.css /tmp/ui/css; cp js/bundle.js /tmp/ui/js; cp js/bootstrap.min.js /tmp/ui/js; cp js/jquery.min.js /tmp/ui/js; cp index.html /tmp/ui; cp config.js /tmp/ui
     - cp -r /tmp/ui $PROJECT_DIR
     - ls -l $PROJECT_DIR
     # Compile the UI static assets into a Go sourcefile (to be compiled)
