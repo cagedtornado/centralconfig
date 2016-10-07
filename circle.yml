@@ -26,9 +26,6 @@ dependencies:
     - go version
     # Sanity check docker version
     - docker info
-    # Upgrade MySQL to 5.6
-    - sudo apt-add-repository -y 'deb http://ppa.launchpad.net/ondrej/mysql-experimental/ubuntu precise main'
-    - sudo apt-get update; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6
     # Compiler and release tools
     - go get github.com/mitchellh/gox
     - go get github.com/tcnksm/ghr
@@ -75,7 +72,7 @@ test:
     - mkdir $CIRCLE_TEST_REPORTS/junit    
     - go test -v -race $PACKAGE_PATH/... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
     # Multi-platform compile with version information      
-    - gox -ldflags "-X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X github.com/$CIRCLE_PROJECT_USERNAME/centralconfig/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/... 
+    - gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/... 
     # Build and tag our docker image            
     - cp $NATIVE_BINARY $DOCKER_DIR/centralconfig
     - cp $PROJECT_DIR/Dockerfile $DOCKER_DIR/
