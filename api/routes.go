@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/cagedtornado/centralconfig/datastores"
@@ -181,11 +180,6 @@ func GetAllApplications(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	sendDataResponse(rw, "No config items found", applications)
-}
-
-//	Initializes a store
-func InitStore(rw http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(rw, "InitStore method")
 }
 
 //	Used to send back an error:

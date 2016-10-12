@@ -50,7 +50,6 @@ func serve(cmd *cobra.Command, args []string) {
 	Router.HandleFunc("/config/remove", api.RemoveConfig)
 	Router.HandleFunc("/config/getall", api.GetAllConfig)
 	Router.HandleFunc("/config/getallforapp", api.GetAllConfigForApp)
-	Router.HandleFunc("/config/init", api.InitStore)
 	Router.HandleFunc("/applications/getall", api.GetAllApplications)
 
 	//	Websocket connections
