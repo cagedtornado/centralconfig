@@ -50,7 +50,7 @@ dependencies:
     - cp -r /tmp/ui $PROJECT_DIR
     - ls -l $PROJECT_DIR
     # Compile the UI static assets into a Go sourcefile (to be compiled)
-    - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd 
+    - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd; cat cmd/bindata_assetfs.go
     # Install for our platform to be able to generate 
     # SQL DDL for our integration tests 
     - go install $PACKAGE_PATH/...
