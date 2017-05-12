@@ -42,10 +42,6 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 
-	if cfgFile != "" { // enable ability to specify config file via flag
-		viper.SetConfigFile(cfgFile)
-	}
-
 	//	Set our defaults
 	viper.SetDefault("server.port", "3000")
 	viper.SetDefault("server.bind", "")
@@ -56,6 +52,10 @@ func initConfig() {
 	viper.SetConfigName("centralconfig") // name of config file (without extension)
 	viper.AddConfigPath("$HOME")         // adding home directory as first search path
 	viper.AddConfigPath(".")             // also look in the working directory
+
+	if cfgFile != "" { // enable ability to specify config file via flag
+		viper.SetConfigFile(cfgFile)
+	}
 
 	// If a config file is found, read it in
 	// otherwise, make note that there was a problem
