@@ -1,4 +1,4 @@
-# centralconfig [![Circle CI](https://circleci.com/gh/cagedtornado/centralconfig.svg?style=shield)](https://circleci.com/gh/cagedtornado/centralconfig) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
+# centralconfig [![Circle CI](https://circleci.com/gh/cagedtornado/centralconfig.svg?style=shield)](https://circleci.com/gh/cagedtornado/centralconfig) [![Go Report Card](https://goreportcard.com/badge/github.com/cagedtornado/centralconfig)](https://goreportcard.com/report/github.com/cagedtornado/centralconfig) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
 A simple REST based service for managing application configuration across a cluster.  
 Runs natively on: Linux, [Windows](https://www.microsoft.com/en-us/windows), [OSX](http://www.apple.com/osx/), [FreeBSD](https://www.freebsd.org/), [NetBSD](https://www.netbsd.org/), [OpenBSD](http://www.openbsd.org/), and even [Raspberry Pi](https://www.raspberrypi.org/).
