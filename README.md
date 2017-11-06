@@ -34,3 +34,23 @@ To customize the config, first generate a default config file (with the name cen
 ```
 centralconfig defaults > centralconfig.yaml
 ```
+
+### Supported environment variables
+If you're using centralconfig in as part of a [12 factors app](https://12factor.net/config) environment or just want to set centralconfig service settings through environment variables, you have the following settings available:
+
+| Command | Description |
+| --- | --- |
+| `SERVER.SSLCERT` | Path to the SSL certificate file |
+| `SERVER.SSLKEY` | Path to the SSL certificate key |
+| `DATASTORE.TYPE` | The type of backing storage for configuration.  One of: mysql, mssql, boltdb |
+| `DATASTORE.ADDRESS` | Location of the backing store |
+| `DATASTORE.DATABASE` | Database name to use in the backing store |
+| `DATASTORE.USER` | Databse user to use |
+| `DATASTORE.PASSWORD` | Database password to use |
+
+#### Example (with docker)
+```
+docker run --restart=unless-stopped -d -p 3800:3000 -v /private/etc/ssl:/certs -e "SERVER.SSLCERT=/certs/sslcert.pem" -e "SERVER.SSLKEY=/certs/sslcert.key" -e "DATASTORE.TYPE=mysql" -e "DATASTORE.ADDRESS=mysqldatabaseserver:3306" -e "DATASTORE.DATABASE=centralconfig" -e "DATASTORE.USER=myusername" -e "DATASTORE.PASSWORD=thepasswordhere" cagedtornado/centralconfig:154
+```
+
+
