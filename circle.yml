@@ -8,6 +8,8 @@ machine:
     PROJECT_DIR: "$GOPATH/src/$PACKAGE_PATH"
     GODIST: "go1.7.linux-amd64.tar.gz"
     NATIVE_BINARY: "$CIRCLE_ARTIFACTS/centralconfig_linux_amd64"
+  node:
+    version: 6
   post:
     # Install the specified version of Go
     - mkdir -p download
@@ -19,7 +21,7 @@ machine:
 checkout:
   post:
     # Get our UI source
-    - git clone https://github.com/$CIRCLE_PROJECT_USERNAME/centralconfig-ui.git
+    - cd /tmp; git clone https://github.com/$CIRCLE_PROJECT_USERNAME/centralconfig-ui.git
 dependencies:
   pre:    
     # Sanity check that our go version is installed
@@ -33,7 +35,9 @@ dependencies:
     - go get github.com/jteeuwen/go-bindata/...
     - go get github.com/elazarl/go-bindata-assetfs/...
     # Unit test reports
-    - go get -u github.com/jstemmer/go-junit-report 
+    - go get -u github.com/jstemmer/go-junit-report
+    # Sanity check the yarn version:
+    - yarn --version
   override:
     # Create our project workspace
     - mkdir -p "$PROJECT_DIR"
@@ -44,13 +48,8 @@ dependencies:
     - go get -t -d -v $PACKAGE_PATH/...    
   post: 
     # Setup our UI 
-    - mkdir -p /tmp/ui/js
-    - mkdir -p /tmp/ui/css/fonts
-    - cd centralconfig-ui; git describe --tags; npm set progress=false; npm install; npm run build; cp css/*.css /tmp/ui/css; cp css/fonts/*.* /tmp/ui/css/fonts; cp js/bundle.js /tmp/ui/js; cp js/bootstrap.min.js /tmp/ui/js; cp js/jquery.min.js /tmp/ui/js; cp index.html /tmp/ui; cp config.js /tmp/ui
-    - cp -r /tmp/ui $PROJECT_DIR
-    - ls -l $PROJECT_DIR
-    # Compile the UI static assets into a Go sourcefile (to be compiled)
-    - cd $PROJECT_DIR; go-bindata-assetfs -pkg cmd ./ui/...;rm cmd/bindata_assetfs.go; ls -l cmd; mv bindata_assetfs.go cmd; ls -l cmd; cat cmd/bindata_assetfs.go
+    - cd /tmp/centralconfig-ui; git describe --tags; yarn; yarn build; go-bindata-assetfs -pkg cmd build/...; mv -f bindata_assetfs.go "$PROJECT_DIR/cmd";
+    - ls -lR $PROJECT_DIR
     # Install for our platform to be able to generate 
     # SQL DDL for our integration tests 
     - go install $PACKAGE_PATH/...
