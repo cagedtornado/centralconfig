@@ -10,7 +10,7 @@ API path              | Description
 [/config/getallforapp](https://github.com/danesparza/centralconfig/tree/master/api#configgetallforapp)  | Get all configuration items for a single application (plus the default * application)
 [/applications/getall](https://github.com/danesparza/centralconfig/tree/master/api#applicationsgetall)  | Get all applications
 
-####Requests
+#### Requests
 Most API operations expect a configitem object in the POST body that will be used to either filter (in a get operation), update or create (in a set operation), or remove an item (in a remove operation).  
 
 For example:
@@ -23,7 +23,7 @@ For example:
 }
 ```
 
-####Responses
+#### Responses
 All operations will return an object that contain the fields status, message, and data.  
 
 For Example:
@@ -49,7 +49,7 @@ This operation retrieves a single configuration item.  If it doesn't exist for t
 
 This is an HTTP `POST` request
 
-######Example request:
+###### Example request:
 ```json
 {
     "application" : "AccountingReports",
@@ -57,7 +57,7 @@ This is an HTTP `POST` request
 }
 ```
 
-######Example response:
+###### Example response:
 ```json
 {
   "status": 200,
@@ -79,7 +79,7 @@ This operation sets the value of a single configuration item
 
 This is an HTTP `POST` request
 
-######Example request:
+###### Example request:
 ```json
 {
     "application" : "AccountingReports",
@@ -88,7 +88,7 @@ This is an HTTP `POST` request
 }
 ```
 
-######Example response:
+###### Example response:
 ```json
 {
   "status": 200,
@@ -108,7 +108,7 @@ This is an HTTP `POST` request
 
 This operation removes a single configuration item
 
-######Example request:
+###### Example request:
 ```json
 {
     "application" : "AccountingReports",
@@ -116,7 +116,7 @@ This operation removes a single configuration item
 }
 ```
 
-######Example response:
+###### Example response:
 ```json
 {
   "status": 200,
@@ -138,7 +138,7 @@ This operation retrieves all configuration items.
 
 This is a `GET` request.
 
-######Example response:
+###### Example response:
 ```json
 {
   "status": 200,
@@ -186,14 +186,14 @@ This operation retrieves all configuration items for a specified application
 
 This is an HTTP `POST` operation
 
-######Example request:
+###### Example request:
 ```json
 {
     "application" : "AccountingReports"
 }
 ```
 
-######Example response:
+###### Example response:
 ```json
 {
   "status": 200,
@@ -225,7 +225,7 @@ This operation retrieves all applications
 
 This is an HTTP `GET` operation.
 
-######Example response:
+###### Example response:
 ```json
 {
   "status": 200,
