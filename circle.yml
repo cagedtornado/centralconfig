@@ -48,7 +48,7 @@ dependencies:
     - go get -t -d -v $PACKAGE_PATH/...    
   post: 
     # Setup our UI 
-    - cd /tmp/centralconfig-ui; git describe --tags; yarn; yarn build; go-bindata-assetfs -pkg cmd build/...; mv -f bindata_assetfs.go "$PROJECT_DIR/cmd";
+    - cd /tmp/centralconfig-ui; git describe --tags; yarn; yarn build; go-bindata-assetfs -pkg cmd build/...; mv -f bindata.go "$PROJECT_DIR/cmd";
     - ls -lR $PROJECT_DIR
     # Install for our platform to be able to generate 
     # SQL DDL for our integration tests 
