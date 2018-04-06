@@ -72,7 +72,7 @@ test:
     - go test -v -race $PACKAGE_PATH/... | go-junit-report > $CIRCLE_TEST_REPORTS/junit/junit.xml
     # Multi-platform compile with version information
     - cd $PROJECT_DIR
-    - gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/... 
+    - gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/... 
     # Build and tag our docker image            
     - cp $NATIVE_BINARY $DOCKER_DIR/centralconfig
     - cp $PROJECT_DIR/Dockerfile $DOCKER_DIR/
