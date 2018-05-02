@@ -92,6 +92,7 @@ jobs:
       - image: circleci/mysql:5.6.36
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: true
+            MYSQL_USER: circleci # default container user
             MYSQL_DATABASE: circle_test        
     environment:
       PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
@@ -118,10 +119,6 @@ jobs:
           # preinstalled in circleci/* docker image
           command: dockerize -wait tcp://127.0.0.1:3306 -timeout 120s
 
-      - run:
-          name: Sanity check mysql version
-          command: mysql -V
-        
       - run:
           name: Create DDL for test database
           command: /tmp/workspace/centralconfig defaults --mysql > mysql.sql
@@ -179,6 +176,10 @@ jobs:
          command: go get github.com/mitchellh/gox
 
       - run:
+         name: Get release tool
+         command: go get github.com/tcnksm/ghr
+
+      - run:
          name: Get static assets compilers
          command: go get github.com/jteeuwen/go-bindata/...;go get github.com/elazarl/go-bindata-assetfs/...;
 
@@ -196,11 +197,7 @@ jobs:
 
       - run:
          name: Create binaries for all platforms
-         command: mkdir -p /tmp/binaries; gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "/tmp/binaries/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...
-
-      - run:
-         name: Fetch and Install packages
-         command: go get github.com/tcnksm/ghr
+         command: mkdir -p /tmp/binaries; gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "/tmp/binaries/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...      
 
       # Persist the release binaries to the workspace
       - persist_to_workspace:
