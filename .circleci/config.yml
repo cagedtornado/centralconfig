@@ -92,7 +92,6 @@ jobs:
       - image: circleci/mysql:5.6.36
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: true
-            MYSQL_USER: circleci # default container user
             MYSQL_DATABASE: circle_test        
     environment:
       PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
@@ -105,6 +104,10 @@ jobs:
       - run:
          name: Install MySQL client
          command: sudo apt install mysql-client
+
+      - run:
+         name: Get static assets compilers
+         command: go get github.com/jteeuwen/go-bindata/...;go get github.com/elazarl/go-bindata-assetfs/...;
 
       - run:
          name: Get other dependencies
@@ -125,7 +128,7 @@ jobs:
 
       - run:
           name: Create test database
-          command: mysql -h 127.0.0.1 circle_test < mysql.sql
+          command: mysql -h 127.0.0.1 -u root circle_test < mysql.sql
 
       - run:
          name: Run unit tests
@@ -232,6 +235,3 @@ workflows:
 #      - dockerbuild:
 #          requires:
 #            - build
-#      - dockerpush:
-#          requires:
-#            - dockerbuild
