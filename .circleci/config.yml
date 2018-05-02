@@ -151,7 +151,7 @@ jobs:
 
       - run:
           name: Create test database
-          command: mysql --host 127.0.0.1 --user ubuntu --password unittest circle_test < mysql.sql
+          command: mysql --host=127.0.0.1 --user=ubuntu --password=unittest circle_test < mysql.sql
 
       - run:
          name: Run unit tests
