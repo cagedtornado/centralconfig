@@ -42,6 +42,8 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.9.4
+    environment:
+      PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
     steps:
       - checkout
 
@@ -76,11 +78,25 @@ jobs:
          name: Create binary for DB testing
          command: go install github.com/cagedtornado/centralconfig/...
 
-      # Persist the binary to the workspace
+      - run:
+         name: Create binaries for release
+         command: mkdir -p /tmp/binaries; gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "/tmp/binaries/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...
+
+      # Persist the db testing binary to the workspace
       - persist_to_workspace:
           root: /go/bin
           paths:
             - centralconfig
+
+      # Persist the release binaries to the workspace
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - binaries
+
+      # Persist the release binaries as artifacts
+      - store_artifacts:
+          path: /tmp/binaries
 
   deploy:
     docker:
