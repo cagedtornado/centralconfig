@@ -71,7 +71,7 @@ jobs:
          command: cd /go/src/github.com/cagedtornado/centralconfig; go-bindata-assetfs -pkg cmd /tmp/workspace/build/...; mv -f bindata.go cmd;
 
       - run:
-         name: Run go vet
+         name: Perform code analysis
          command: go vet -x $PACKAGE_PATH/...
 
       - run:
@@ -119,6 +119,10 @@ jobs:
 
       - attach_workspace:
           at: /tmp/workspace
+
+      - run:
+         name: Install MySQL client
+         command: sudo apt install mysql-client
 
       - run:
          name: Get windows specific dependencies
