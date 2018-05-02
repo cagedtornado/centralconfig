@@ -109,8 +109,8 @@ jobs:
       - image: circleci/golang:1.9.4
       - image: circleci/mysql:5.6.36
         environment:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_USER: 'ubuntu'
+          MYSQL_PASSWORD: 'unittest'
           MYSQL_DATABASE: circleci
     environment:
       PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
@@ -151,7 +151,7 @@ jobs:
 
       - run:
           name: Create test database
-          command: mysql -h 127.0.0.1 -u ubuntu circle_test < mysql.sql
+          command: mysql --host 127.0.0.1 --user ubuntu --password unittest circle_test < mysql.sql
 
       - run:
          name: Run unit tests
