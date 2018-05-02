@@ -51,10 +51,6 @@ jobs:
           at: /tmp/workspace
 
       - run:
-         name: Sanity check go version
-         command: go version
-
-      - run:
          name: Get compiler tool
          command: go get github.com/mitchellh/gox
 
@@ -64,11 +60,11 @@ jobs:
 
       - run:
          name: Get windows specific dependencies
-         command: env GOOS=windows go get -d -v github.com/cagedtornado/centralconfig/...
+         command: env GOOS=windows go get -d -v $PACKAGE_PATH/...
 
       - run:
          name: Get other dependencies
-         command: go get -t -d -v github.com/cagedtornado/centralconfig/...
+         command: go get -t -d -v $PACKAGE_PATH/...
 
       - run: 
          name: Compile the UI to static assets
@@ -76,7 +72,7 @@ jobs:
 
       - run:
          name: Create binary for DB testing
-         command: go install github.com/cagedtornado/centralconfig/...
+         command: go install $PACKAGE_PATH/...
 
       - run:
          name: Create binaries for release
@@ -97,6 +93,30 @@ jobs:
       # Persist the release binaries as artifacts
       - store_artifacts:
           path: /tmp/binaries
+
+  unittest:
+    docker:
+      - image: circleci/golang:1.9.4
+    environment:
+      PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
+    steps:
+      - checkout
+
+      - run:
+         name: Get windows specific dependencies
+         command: env GOOS=windows go get -d -v $PACKAGE_PATH/...
+
+      - run:
+         name: Get other dependencies
+         command: go get -t -d -v $PACKAGE_PATH/...
+
+      - run:
+         name: Run go vet
+         command: go vet -x $PACKAGE_PATH/...
+
+      - run:
+         name: Run go test
+         command: go test -v -race $PACKAGE_PATH/...
 
   deploy:
     docker:
@@ -153,8 +173,8 @@ workflows:
       - build:
           requires:
             - jsbuild
+      - unittest
 #      - dbtest
-#      - unittest
 #      - dockerbuild:
 #          requires:
 #            - build
