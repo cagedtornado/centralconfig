@@ -48,11 +48,7 @@ jobs:
       - checkout
 
       - attach_workspace:
-          at: /tmp/workspace
-
-      - run:
-         name: Get compiler tool
-         command: go get github.com/mitchellh/gox
+          at: /tmp/workspace      
 
       - run:
          name: Get static assets compilers
@@ -92,12 +88,13 @@ jobs:
 
   unittest:
     docker:
-      - image: circleci/golang:1.9.4
+      - image: circleci/golang:1.9.4        
       - image: circleci/mysql:5.6.36
         environment:
-          MYSQL_USER: 'ubuntu'
-          MYSQL_PASSWORD: 'unittest'
-          MYSQL_DATABASE: circleci
+            MYSQL_USER: root
+            MYSQL_ALLOW_EMPTY_PASSWORD: true
+            MYSQL_PASSWORD:             
+            MYSQL_DATABASE: circle_test        
     environment:
       PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
     steps:
@@ -109,10 +106,6 @@ jobs:
       - run:
          name: Install MySQL client
          command: sudo apt install mysql-client
-
-      - run:
-         name: Get windows specific dependencies
-         command: env GOOS=windows go get -d -v $PACKAGE_PATH/...
 
       - run:
          name: Get other dependencies
@@ -137,7 +130,7 @@ jobs:
 
       - run:
           name: Create test database
-          command: mysql --host=127.0.0.1 --user=ubuntu --password=unittest circle_test < mysql.sql
+          command: mysql -h 127.0.0.1 circle_test < mysql.sql
 
       - run:
          name: Run unit tests
@@ -182,6 +175,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp/workspace
+
+      - run:
+         name: Get compiler tool
+         command: go get github.com/mitchellh/gox
 
       - run:
          name: Get windows specific dependencies
