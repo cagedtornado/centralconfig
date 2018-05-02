@@ -86,7 +86,7 @@ jobs:
           paths:
             - bindata.go      
 
-  unittest:
+  test:
     docker:
       - image: circleci/golang:1.9.4        
       - image: circleci/mysql:5.6.36
@@ -131,7 +131,7 @@ jobs:
           command: mysql -h 127.0.0.1 -u root circle_test < mysql.sql
 
       - run:
-         name: Run unit tests
+         name: Run tests
          command: go test -v -race $PACKAGE_PATH/...
 
   deploy:
@@ -226,7 +226,7 @@ workflows:
       - build:
           requires:
             - jsbuild
-      - unittest:
+      - test:
           requires:
             - build
       - release:
