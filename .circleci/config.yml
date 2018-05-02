@@ -91,9 +91,7 @@ jobs:
       - image: circleci/golang:1.9.4        
       - image: circleci/mysql:5.6.36
         environment:
-            MYSQL_USER: root
             MYSQL_ALLOW_EMPTY_PASSWORD: true
-            MYSQL_PASSWORD:             
             MYSQL_DATABASE: circle_test        
     environment:
       PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
@@ -179,6 +177,10 @@ jobs:
       - run:
          name: Get compiler tool
          command: go get github.com/mitchellh/gox
+
+      - run:
+         name: Get static assets compilers
+         command: go get github.com/jteeuwen/go-bindata/...;go get github.com/elazarl/go-bindata-assetfs/...;
 
       - run:
          name: Get windows specific dependencies
