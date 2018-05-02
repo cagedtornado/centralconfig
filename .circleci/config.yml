@@ -76,11 +76,7 @@ jobs:
 
       - run:
          name: Perform basic build
-         command: go install $PACKAGE_PATH/...
-
-      - run:
-         name: Create binaries for all platforms
-         command: mkdir -p /tmp/binaries; gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "/tmp/binaries/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...
+         command: go install $PACKAGE_PATH/...      
 
       # Persist the db testing binary to the workspace
       - persist_to_workspace:
@@ -92,17 +88,7 @@ jobs:
       - persist_to_workspace:
           root: /go/src/github.com/cagedtornado/centralconfig/cmd
           paths:
-            - bindata.go
-
-      # Persist the release binaries to the workspace
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - binaries
-
-      # Persist the release binaries as artifacts
-      - store_artifacts:
-          path: /tmp/binaries
+            - bindata.go      
 
   unittest:
     docker:
@@ -190,17 +176,46 @@ jobs:
   release:
     docker:
       - image: circleci/golang:1.9.4
+    environment:
+      PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp/workspace
+
+      - run:
+         name: Get windows specific dependencies
+         command: env GOOS=windows go get -d -v $PACKAGE_PATH/...
+
+      - run:
+         name: Get other dependencies
+         command: go get -t -d -v $PACKAGE_PATH/...
+
+      - run:
+         name: Copy static assets file
+         command: cp /tmp/workspace/bindata.go /go/src/$PACKAGE_PATH/cmd
+
+      - run:
+         name: Create binaries for all platforms
+         command: mkdir -p /tmp/binaries; gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "/tmp/binaries/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...
 
       - run:
          name: Fetch and Install packages
          command: go get github.com/tcnksm/ghr
 
+      # Persist the release binaries to the workspace
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - binaries
+
+      # Persist the release binaries as artifacts
+      - store_artifacts:
+          path: /tmp/binaries
+
       - run: 
          name: Push the release to Github
-         command: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM /tmp/workspace/binaries/ || true
+         command: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM /tmp/binaries/ || true
 
 workflows:
   version: 2
