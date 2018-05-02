@@ -6,7 +6,7 @@ jobs:
     steps:
       - run:
           name: Download and unpack UI
-          command: cd /tmp; wget https://github.com/cagedtornado/centralconfig-ui/archive/master.zip; unzip master.zip -d centralconfig-ui; cd /tmp/centralconfig-ui; cp -r centralconfig-ui-master /home/circleci/project; cd /home/circleci/project;
+          command: cd /tmp; wget https://github.com/cagedtornado/centralconfig-ui/archive/master.zip; unzip master.zip; cp -r centralconfig-ui-master/. /home/circleci/project/; cd /home/circleci/project;
 
       # Restore our dependency cache
       - restore_cache:
