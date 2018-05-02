@@ -75,11 +75,11 @@ jobs:
          command: go vet -x $PACKAGE_PATH/...
 
       - run:
-         name: Create binary for DB testing
+         name: Perform basic build
          command: go install $PACKAGE_PATH/...
 
       - run:
-         name: Create binaries for release
+         name: Create binaries for all platforms
          command: mkdir -p /tmp/binaries; gox -ldflags "-X $PACKAGE_PATH/cmd.buildVersion=1.0.$CIRCLE_BUILD_NUM -X $PACKAGE_PATH/cmd.commitId=$CIRCLE_SHA1" -arch="!mips !mipsle !mips64 !mips64le" -output "/tmp/binaries/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}" $PACKAGE_PATH/...
 
       # Persist the db testing binary to the workspace
@@ -151,10 +151,10 @@ jobs:
 
       - run:
           name: Create test database
-          command: mysql circle_test < mysql.sql
+          command: mysql -h 127.0.0.1 -u ubuntu circle_test < mysql.sql
 
       - run:
-         name: Run go test
+         name: Run unit tests
          command: go test -v -race $PACKAGE_PATH/...
 
   deploy:
