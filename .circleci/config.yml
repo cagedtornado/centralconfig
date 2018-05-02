@@ -75,10 +75,6 @@ jobs:
          command: go vet -x $PACKAGE_PATH/...
 
       - run:
-         name: Run unit tests
-         command: go test -v -race $PACKAGE_PATH/...
-
-      - run:
          name: Create binary for DB testing
          command: go install $PACKAGE_PATH/...
 
@@ -92,6 +88,12 @@ jobs:
           paths:
             - centralconfig
 
+      # Persist the static assets to the workspace
+      - persist_to_workspace:
+          root: /go/src/github.com/cagedtornado/centralconfig/cmd
+          paths:
+            - bindata.go
+
       # Persist the release binaries to the workspace
       - persist_to_workspace:
           root: /tmp
@@ -101,6 +103,55 @@ jobs:
       # Persist the release binaries as artifacts
       - store_artifacts:
           path: /tmp/binaries
+
+  unittest:
+    docker:
+      - image: circleci/golang:1.9.4
+      - image: circleci/mysql:5.6.36
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_DATABASE: circleci
+    environment:
+      PACKAGE_PATH: "github.com/cagedtornado/centralconfig"
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run:
+         name: Get windows specific dependencies
+         command: env GOOS=windows go get -d -v $PACKAGE_PATH/...
+
+      - run:
+         name: Get other dependencies
+         command: go get -t -d -v $PACKAGE_PATH/...      
+      
+      - run:
+         name: Copy static assets file
+         command: cp /tmp/workspace/bindata.go /go/src/$PACKAGE_PATH/cmd
+
+      - run:
+          name: Wait for DB
+          # preinstalled in circleci/* docker image
+          command: dockerize -wait tcp://127.0.0.1:3306 -timeout 120s
+
+      - run:
+          name: Sanity check mysql version
+          command: mysql -V
+        
+      - run:
+          name: Create DDL for test database
+          command: /tmp/workspace/centralconfig defaults --mysql > mysql.sql
+
+      - run:
+          name: Create test database
+          command: mysql circle_test < mysql.sql
+
+      - run:
+         name: Run go test
+         command: go test -v -race $PACKAGE_PATH/...
 
   deploy:
     docker:
@@ -145,7 +196,7 @@ jobs:
 
       - run: 
          name: Push the release to Github
-         command: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM /tmp/workspace/dashboard-ui.zip || true
+         command: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM /tmp/workspace/binaries/ || true
 
 workflows:
   version: 2
@@ -157,13 +208,15 @@ workflows:
       - build:
           requires:
             - jsbuild
-#      - dbtest
+      - unittest:
+          requires:
+            - build
+      - release:
+          requires:
+            - build
 #      - dockerbuild:
 #          requires:
 #            - build
 #      - dockerpush:
 #          requires:
 #            - dockerbuild
-#      - release:
-#          requires:
-#            - build
