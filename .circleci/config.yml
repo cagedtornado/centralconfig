@@ -78,7 +78,7 @@ jobs:
 
       # Persist the binary to the workspace
       - persist_to_workspace:
-          root: /usr/local/go/bin
+          root: /go/bin
           paths:
             - centralconfig
 
