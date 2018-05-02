@@ -70,7 +70,7 @@ jobs:
 
       - run: 
          name: Compile the UI to static assets
-         command: go-bindata-assetfs -pkg cmd /tmp/workspace/build/...; mv -f bindata.go "github.com/cagedtornado/centralconfig/cmd";
+         command: cd /go/src/github.com/cagedtornado/centralconfig; go-bindata-assetfs -pkg cmd /tmp/workspace/build/...; mv -f bindata.go cmd;
 
       - run:
          name: Create binary for DB testing
