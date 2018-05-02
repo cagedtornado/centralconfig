@@ -5,8 +5,8 @@ jobs:
       - image: circleci/node:9.7.1-stretch-browsers
     steps:
       - run:
-          name: Clone UI 
-          command: git clone https://github.com/centralconfig/centralconfig-ui.git
+          name: Download and unpack UI
+          command: cd /tmp; wget https://github.com/cagedtornado/centralconfig-ui/archive/master.zip; unzip master.zip -d centralconfig-ui; cd /tmp/centralconfig-ui;
 
       # Restore our dependency cache
       - restore_cache:
