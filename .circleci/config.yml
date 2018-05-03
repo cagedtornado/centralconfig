@@ -64,7 +64,7 @@ jobs:
 
       - run: 
          name: Compile the UI to static assets
-         command: cd /go/src/github.com/cagedtornado/centralconfig; go-bindata-assetfs -pkg cmd /tmp/workspace/build/...; mv -f bindata.go cmd;
+         command: cd /tmp/workspace; go-bindata-assetfs -pkg cmd build/...; mv bindata.go /go/src/github.com/cagedtornado/centralconfig/cmd;
 
       - run:
          name: Perform code analysis
